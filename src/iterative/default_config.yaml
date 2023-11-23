@@ -1,0 +1,33 @@
+scripts_search_path: "."  # This sets the default search path to the current working directory
+logging:
+  date_format: "%Y-%m-%d %H:%M:%S"
+  log_colors:
+    DEBUG: "cyan"
+    INFO: "green"
+    WARNING: "yellow"
+    ERROR: "red"
+    CRITICAL: "red,bg_white"
+  secondary_log_colors:
+    message:
+      ERROR: "red"
+      CRITICAL: "red"
+      WARNING: "yellow"
+      INFO: "green"
+      DEBUG: "cyan"
+
+
+feature_flags:
+  new_feature: true
+
+test_mode: true
+
+static_ids:
+  id1: "default_id_1"
+
+assistant_ids:
+  cli_assistant: ""
+  codegen_assistant: ""
+
+default_ai_model: "gpt-3.5-turbo"
+FASTAPI_PORT: 5279
+FASTAPI_HOST: "0.0.0.0"
