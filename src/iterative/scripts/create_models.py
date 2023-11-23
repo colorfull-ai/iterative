@@ -2,6 +2,51 @@ import os
 from textwrap import dedent
 from typing import Dict, List, Optional
 from iterative.config import _get_global_config
+from iterative.scripts.create_endpoints_from_models import _generate_crud_endpoints
+import humps
+
+def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = None, endpoints_path: Optional[str] = None):
+    """
+    Generate FastAPI CRUD endpoints for a given model and save them in the 'endpoints' directory.
+
+    Args:
+        model_name (str): Name of the model for which to generate endpoints.
+        models_path (Optional[str]): Path to the directory containing the model files. Defaults to the 'models' directory in the current working directory.
+        endpoints_path (Optional[str]): Path to the directory where the endpoints files will be saved. Defaults to the 'endpoints' directory in the current working directory.
+    """
+    # Fetch paths from the global configuration if not provided
+    if not models_path or not endpoints_path:
+        config = _get_global_config()
+        base_path = config.get('model_generation_path', os.getcwd())
+        models_path = models_path or os.path.join(base_path, 'models')
+        endpoints_path = endpoints_path or os.path.join(base_path, 'endpoints')
+
+    # Ensure the 'models' directory exists
+    if not os.path.exists(models_path):
+        print(f"Models directory {models_path} does not exist.")
+        return
+    
+    # Ensure the 'endpoints' directory exists
+    os.makedirs(endpoints_path, exist_ok=True)
+
+    model_file_name = f"{humps.pascalize(model_name)}.py"
+    model_file_path = os.path.join(models_path, model_file_name)
+
+    # Ensure the model file exists
+    if not os.path.isfile(model_file_path):
+        print(f"Model file {model_file_path} does not exist.")
+        return
+
+    # Generate CRUD endpoint script
+    endpoints_script = _generate_crud_endpoints(model_name)
+    endpoints_file_path = os.path.join(endpoints_path, f"{humps.decamelize(model_name)}_endpoints.py")
+
+    # Write the endpoints to the file, overwriting any existing file
+    with open(endpoints_file_path, 'w') as file:
+        file.write(dedent(endpoints_script))
+
+    print(f"CRUD endpoints for {model_name} created at {endpoints_file_path}")
+
 
 def create_model(entity_name: str, model_generation_path: Optional[str] = None):
     """
