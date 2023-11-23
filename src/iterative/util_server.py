@@ -113,7 +113,6 @@ def discover_scripts(cli_app, web_app):
         for file in files:
             if file.endswith(".py"):
                 full_path = os.path.join(root, file)
-                print(full_path)
                 module = load_module_from_path(full_path)
                 for name, func in inspect.getmembers(module, inspect.isfunction):
                     # Skip private functions (those starting with an underscore)
