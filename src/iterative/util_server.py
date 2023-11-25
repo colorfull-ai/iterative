@@ -1,4 +1,5 @@
 # util_server.py in admin_code subdirectory
+import subprocess
 import typer
 import os
 import importlib.util
@@ -125,10 +126,27 @@ def discover_scripts(cli_app, web_app):
                     logged_func = log_function_call(func)  # Apply decorator
                     cli_app.command(name=snake_name)(logged_func)
 
-                        
+
+def run_ngrok_setup_script(script_path):
+    try:
+        subprocess.run(["bash", script_path], check=True)
+        # Assuming the script sets the environment variables
+        print("ngrok and environment variables set up successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while running the ngrok setup script: {e}")
 
 
 def run_web_server(port: int):
+    # Construct the path to the Bash script dynamically
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    bash_script_path = os.path.join(script_directory, "run_ngrok.sh")
+
+    # Run the Bash script to set up ngrok and environment variables
+    run_ngrok_setup_script(bash_script_path)
+
+    # Now, environment variables are set, and you can access them if needed
+    # For example: os.environ.get('WEBHOOK_DEV_LINK')
+
     host = "0.0.0.0"
     os.environ['FASTAPI_HOST'] = host
     os.environ['FASTAPI_PORT'] = str(port)
