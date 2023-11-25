@@ -5,7 +5,7 @@ import os
 import importlib.util
 import inspect
 from fastapi import APIRouter, FastAPI, HTTPException
-from .config import _get_global_config
+from .config import get_config
 from typing import Callable, get_type_hints
 import uuid
 import json
@@ -96,27 +96,35 @@ def create_endpoint(func: Callable, name: str):
 
 def discover_scripts(cli_app, web_app):
     # Get the global configuration
-    config = _get_global_config()
+    config = get_config()
+    user_scripts_path = config.get("scripts_search_path")
 
-    # Directory of the script containing this function
-    script_directory = os.path.dirname(os.path.abspath(__file__))
+    # Directory containing the default scripts
+    default_scripts_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
 
-    # Path to the 'scripts' directory within the same directory as this script
-    scripts_search_path = os.path.join(script_directory, 'scripts')
+    # Process default scripts
+    process_scripts_directory(default_scripts_directory, cli_app, web_app)
 
-    # Check if the 'scripts' directory exists
-    if not os.path.exists(scripts_search_path):
-        print(f"'scripts' directory not found in {script_directory}")
+    # If user provided a scripts path, process those scripts as well
+    if user_scripts_path:
+        if user_scripts_path == ".":
+            iterative_app_scripts_directory = os.path.join(os.getcwd(), "scripts")
+            process_scripts_directory(iterative_app_scripts_directory, cli_app, web_app)
+
+def process_scripts_directory(directory, cli_app, web_app):
+    # Skip if the directory doesn't exist
+    if not os.path.exists(directory):
+        print(f"'scripts' directory not found in {directory}")
         return
 
-    # Search for Python scripts in the 'scripts' directory
-    for root, dirs, files in os.walk(scripts_search_path):
+    # Search for Python scripts in the provided directory
+    for root, dirs, files in os.walk(directory):
         for file in files:
             if file.endswith(".py"):
                 full_path = os.path.join(root, file)
                 module = load_module_from_path(full_path)
                 for name, func in inspect.getmembers(module, inspect.isfunction):
-                    # Skip private functions (those starting with an underscore)
+                    # Skip private functions
                     if name.startswith('_'):
                         continue
                     snake_name = snake_case(name)

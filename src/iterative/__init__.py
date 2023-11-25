@@ -1,9 +1,12 @@
 import os
+from iterative.commands.template_commands import init
 import typer
-from .util_server import discover_scripts, run_web_server, cli_app, web_app
-from .config import Config, set_global_config, _get_global_config
+from iterative.util_server import discover_scripts, run_web_server, cli_app, web_app
+from iterative.config import Config, set_config, get_config
 import logging
-from . import logging as package_logging
+from nosql_yorm.cache import cache_handler as cache
+from iterative.models import IterativeModel
+
 
 app = typer.Typer()
 
@@ -15,24 +18,14 @@ def start_util_server(
     """
     Starts the utility server on the specified port.
     """
-    load_configuration(config_path)
     run_web_server(port)
 
-def load_configuration(custom_config_path: str = None):
-    # Default config file next to admin.py
-    default_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.yaml")
-
-    # Use the custom config path if provided, otherwise use the default
-    final_config_path = custom_config_path if custom_config_path else default_config_path
-
-    # Load and set the configuration
-    config = Config(final_config_path)
-    set_global_config(config)
-
-    # Log the usage of default configuration if custom config is not provided
-    if not custom_config_path:
-        logger = logging.getLogger("admin")
-        logger.info("Using default configuration.")
+@app.command()
+def init_command(directory: str):
+    """
+    Initialize a new iterative app in the specified directory.
+    """
+    init(directory)
 
 
 def start_app():
@@ -50,8 +43,10 @@ __all__ = [
     "discover_scripts",
     "run_web_server",
     "Config",
-    "set_global_config",
+    "set_config",
     "_get_global_config"
     "logging",
-    "package_logging"  # Only if you have custom logging functionality in your package
+    "package_logging",  # Only if you have custom logging functionality in your package
+    "cache",
+    "IterativeModel"
 ]

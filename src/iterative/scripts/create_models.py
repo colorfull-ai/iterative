@@ -1,7 +1,7 @@
 import os
-from textwrap import dedent
+from textwrap import dedent as _dedent
 from typing import Dict, List, Optional
-from iterative.config import _get_global_config
+from iterative.config import get_config
 from iterative.scripts.create_endpoints_from_models import _generate_crud_endpoints
 import humps
 
@@ -16,7 +16,7 @@ def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = N
     """
     # Fetch paths from the global configuration if not provided
     if not models_path or not endpoints_path:
-        config = _get_global_config()
+        config = get_config()
         base_path = config.get('model_generation_path', os.getcwd())
         models_path = models_path or os.path.join(base_path, 'models')
         endpoints_path = endpoints_path or os.path.join(base_path, 'endpoints')
@@ -43,7 +43,7 @@ def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = N
 
     # Write the endpoints to the file, overwriting any existing file
     with open(endpoints_file_path, 'w') as file:
-        file.write(dedent(endpoints_script))
+        file.write(_dedent(endpoints_script))
 
     print(f"CRUD endpoints for {model_name} created at {endpoints_file_path}")
 
@@ -58,7 +58,7 @@ def create_model(entity_name: str, model_generation_path: Optional[str] = None):
     """
     # Fetch the model generation path from the global configuration if not provided
     if not model_generation_path:
-        config = _get_global_config()
+        config = get_config()
         model_generation_path = config.get('model_generation_path', os.getcwd())
 
     # Append 'models' to the model generation path to ensure the directory structure
@@ -84,12 +84,23 @@ class {class_name}(BaseFirebaseModel):
 
     # Write the model class to the file, overwriting any existing file
     with open(file_path, 'w') as file:
-        file.write(dedent(model_content))
+        file.write(_dedent(model_content))
 
     print(f"Model {class_name} created at {file_path}")
 
 
 def add_property_to_model(entity_name: str, property_name: str, property_type: str, model_generation_path: str = None):
+    """
+    Add a new property to an existing nosql_yorm model.
+
+    Args:
+        entity_name (str): The name of the entity to which the property will be added.
+        property_name (str): The name of the property to be added.
+        property_type (str): The data type of the property to be added.
+        model_generation_path (str, optional): The path to the directory containing the model file. Defaults to the current working directory.
+
+    This function adds a new property to the specified model class. The property is appended to the class definition in the model's Python file.
+    """
     model_folder = model_generation_path or os.getcwd()
     file_name = f"{entity_name}.py".lower()
     file_path = os.path.join(model_folder, file_name)
@@ -117,6 +128,18 @@ def add_property_to_model(entity_name: str, property_name: str, property_type: s
 
 
 def edit_property_in_model(entity_name: str, property_name: str, new_type: str, model_generation_path: str = None):
+    """
+    Edit an existing property in a nosql_yorm model.
+
+    Args:
+        entity_name (str): The name of the entity whose property will be edited.
+        property_name (str): The name of the property to be edited.
+        new_type (str): The new data type for the property.
+        model_generation_path (str, optional): The path to the directory containing the model file. Defaults to the current working directory.
+
+    This function modifies the data type of an existing property in the specified model class. It updates the property definition in the model's Python file.
+    """
+
     model_folder = model_generation_path or os.getcwd()
     file_name = f"{entity_name}.py".lower()
     file_path = os.path.join(model_folder, file_name)
