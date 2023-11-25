@@ -1,15 +1,18 @@
 # util_server.py in admin_code subdirectory
 import subprocess
+import time
 import typer
 import os
 import importlib.util
 import inspect
 from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from .config import get_config
 from typing import Callable, get_type_hints
 import uuid
 import json
 from functools import wraps
+from fastapi.openapi.utils import get_openapi
 
 import uvicorn
 from .logger import get_logger
@@ -17,7 +20,36 @@ from .logger import get_logger
 cli_app = typer.Typer()
 web_app = FastAPI()
 
+@web_app.get("/")
+def root():
+    # redirect to docs
+    return RedirectResponse(url='/docs')
 
+def custom_openapi():
+    if web_app.openapi_schema:
+        return web_app.openapi_schema
+    
+    app_name = get_config().config.get("app_name", "Iterative App")
+    version = get_config().config.get("version", "v0.1.0")
+    description = get_config().config.get("description", "Initial Iterative APP Backend.")
+
+    openapi_schema = get_openapi(
+        title=app_name,
+        version=version,
+        description=description,
+        routes=web_app.routes,
+    )
+    
+    openapi_schema["servers"] = [
+        {
+            "url": os.getenv('HOST'),
+        }
+    ]
+
+    web_app.openapi_schema = openapi_schema
+    return web_app.openapi_schema
+
+web_app.openapi = custom_openapi
 
 def log_function_call(func):
     logger = get_logger(func.__name__)
@@ -138,10 +170,23 @@ def process_scripts_directory(directory, cli_app, web_app):
 def run_ngrok_setup_script(script_path):
     try:
         subprocess.run(["bash", script_path], check=True)
-        # Assuming the script sets the environment variables
+
+        # Wait for ngrok to set up completely (30 seconds)
+        print("Waiting for ngrok to set up...")
+        time.sleep(15)
+
+        # Read environment variables from the temp file
+        with open('/tmp/env_vars.txt', 'r') as file:
+            for line in file:
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
+
+        print(f"HOST variable set to: {os.environ.get('HOST')}")
         print("ngrok and environment variables set up successfully.")
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while running the ngrok setup script: {e}")
+    except IOError as e:
+        print(f"Error reading environment variables from temp file: {e}")
 
 
 def run_web_server(port: int):

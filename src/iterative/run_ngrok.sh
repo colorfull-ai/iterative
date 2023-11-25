@@ -80,3 +80,9 @@ export NGROK_EXECUTABLE=$NG
 export WEBHOOK_DEV_LINK=$LNK_HTTPS
 export CLOUD_RUN_SERVICE_URL=$LNK_HTTPS
 export HOST=$LNK_HTTPS
+
+# Write environment variables to a temp file
+echo "NGROK_EXECUTABLE=$NG" > /tmp/env_vars.txt
+echo "WEBHOOK_DEV_LINK=$LNK_HTTPS" >> /tmp/env_vars.txt
+echo "CLOUD_RUN_SERVICE_URL=$LNK_HTTPS" >> /tmp/env_vars.txt
+echo "HOST=$LNK_HTTPS" >> /tmp/env_vars.txt
