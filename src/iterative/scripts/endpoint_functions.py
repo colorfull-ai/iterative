@@ -77,8 +77,7 @@ def process_script(script_path: str, output_dir: str):
     """
     Process a script to find classes inheriting from BaseFirebaseModel and generate CRUD endpoints.
 
-    :param script_path: Path to the script to be processed.
-    :param output_dir: Directory where the generated CRUD endpoint scripts will be saved.
+
     """
     with open(script_path, "r") as file:
         source = file.read()

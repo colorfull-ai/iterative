@@ -1,11 +1,12 @@
 # main module (where you start the server)
 
 import os
+from typing import Dict
 import requests
 from iterative.config import get_config
+from fastapi.responses import JSONResponse
 
-
-def get_openapi_schema() -> dict:
+def get_openapi_schema() -> Dict:
     """
     Fetch the OpenAPI schema from the FastAPI application.
 
@@ -13,4 +14,4 @@ def get_openapi_schema() -> dict:
     dict: The OpenAPI schema as a dictionary.
     """
     from iterative.web import web_app
-    return web_app.openapi_schema
+    return JSONResponse(web_app.openapi_schema)

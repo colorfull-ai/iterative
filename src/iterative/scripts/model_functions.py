@@ -9,10 +9,6 @@ def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = N
     """
     Generate FastAPI CRUD endpoints for a given model and save them in the 'endpoints' directory.
 
-    Args:
-        model_name (str): Name of the model for which to generate endpoints.
-        models_path (Optional[str]): Path to the directory containing the model files. Defaults to the 'models' directory in the current working directory.
-        endpoints_path (Optional[str]): Path to the directory where the endpoints files will be saved. Defaults to the 'endpoints' directory in the current working directory.
     """
     # Fetch paths from the global configuration if not provided
     if not models_path or not endpoints_path:
@@ -51,9 +47,7 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
     """
     Create a basic nosql_yorm model file with the given entity name in a 'models' directory.
 
-    Args:
-        entity_name (str): Name of the entity for which the model is to be created.
-        model_generation_path (Optional[str]): Path where the model file will be created. Defaults to the current working directory.
+
     """
     # Fetch the model generation path from the global configuration if not provided
     if not model_generation_path:
@@ -91,13 +85,6 @@ def add_property_to_model(entity_name: str, property_name: str, property_type: s
     """
     Add a new property to an existing nosql_yorm model.
 
-    Args:
-        entity_name (str): The name of the entity to which the property will be added.
-        property_name (str): The name of the property to be added.
-        property_type (str): The data type of the property to be added.
-        model_generation_path (str, optional): The path to the directory containing the model file. Defaults to the current working directory.
-
-    This function adds a new property to the specified model class. The property is appended to the class definition in the model's Python file.
     """
     model_folder = model_generation_path or os.getcwd()
     file_name = f"{entity_name}.py".lower()
@@ -128,14 +115,6 @@ def add_property_to_model(entity_name: str, property_name: str, property_type: s
 def edit_property_in_model(entity_name: str, property_name: str, new_type: str, model_generation_path: str = None):
     """
     Edit an existing property in a nosql_yorm model.
-
-    Args:
-        entity_name (str): The name of the entity whose property will be edited.
-        property_name (str): The name of the property to be edited.
-        new_type (str): The new data type for the property.
-        model_generation_path (str, optional): The path to the directory containing the model file. Defaults to the current working directory.
-
-    This function modifies the data type of an existing property in the specified model class. It updates the property definition in the model's Python file.
     """
 
     model_folder = model_generation_path or os.getcwd()

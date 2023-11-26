@@ -199,18 +199,16 @@ class ChangeHandler(FileSystemEventHandler):
         self.callback()
 
 def start_uvicorn(host, port, app_module):
-    # Terminate any existing Uvicorn process on the same port
     subprocess.run(["pkill", "-f", f"uvicorn.*{port}"])
-    time.sleep(1)  # Give a moment for the port to become free
-
-    # Start a new Uvicorn process
+    time.sleep(1)  # Allow time for the port to become free
     return subprocess.Popen(["uvicorn", app_module, "--host", host, "--port", str(port)])
+
 
 def run_web_server(port: int):
     host = "0.0.0.0"
     app_module = "iterative.web:web_app"
 
-    # Path to the run_ngrok.sh script
+    # Set up ngrok (assuming you have this function implemented)
     script_directory = os.path.dirname(os.path.abspath(__file__))
     bash_script_path = os.path.join(script_directory, "run_ngrok.sh")
     run_ngrok_setup_script(bash_script_path)
@@ -218,13 +216,18 @@ def run_web_server(port: int):
     uvicorn_process = start_uvicorn(host, port, app_module)
 
     def restart_uvicorn():
-        nonlocal uvicorn_process  # Declare uvicorn_process as nonlocal
+        nonlocal uvicorn_process
+        print("Restarting Detected Changes restarting server... ")
         uvicorn_process.kill()
-        uvicorn_process.wait()  # Wait for the process to terminate
+        uvicorn_process.wait()
         uvicorn_process = start_uvicorn(host, port, app_module)
 
-    # Configure Watchdog
+    # Watchdog configuration
     reload_dirs = get_config().get('reload_dirs', [])
+    # Add the parent directory of this file (iterative package root)
+    iterative_package_root = os.path.dirname(script_directory)
+    reload_dirs.append(iterative_package_root)
+
     event_handler = ChangeHandler(restart_uvicorn)
     observer = Observer()
 

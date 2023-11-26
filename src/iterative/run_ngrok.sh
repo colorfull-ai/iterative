@@ -42,9 +42,27 @@ C_YLW=$(tput setaf 3)
 C_BLE=$(tput setaf 4)
 C_RST=$(tput sgr0)
 
+# Determine the current working directory
+CURRENT_DIR=$(pwd)
+
+# Construct the path to config.yaml (assuming it's in a subdirectory of the current working directory)
+CONFIG_FILE="${CURRENT_DIR}/config.yaml"  # Update 'subdirectory' to the actual subdirectory name
+
+# Read ngrok_domain from config.yaml
+NGROK_DOMAIN=$(awk -F": " '/ngrok_domain/{print $2}' $CONFIG_FILE)
+
+# Check if NGROK_DOMAIN is set and not empty
+if [[ -n $NGROK_DOMAIN ]]; then
+    NGROK_CMD="$NG http --domain=$NGROK_DOMAIN $PT"
+else
+    NGROK_CMD="$NG http $PT"
+fi
+
+# Execute ngrok
 pkill -f ngrok
 printf " ${C_GRN}Executing ngrok...${C_RST}\n\n"
-EXEC=$($NG http $PT >> /dev/null &)
+EXEC=$($NGROK_CMD >> /dev/null &)
+
 sleep 5s
 if ! [ -x "$(command -v curl)" ]; then
 	unset API
