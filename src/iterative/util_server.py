@@ -96,6 +96,23 @@ def create_endpoint(func: Callable, name: str):
 
     return router
 
+def load_routers_from_directory(directory, web_app):
+    # Skip if the directory doesn't exist
+    if not os.path.exists(directory):
+        print(f"Directory not found: {directory}")
+        return
+
+    # Search for Python scripts in the provided directory and load routers
+    for file in os.listdir(directory):
+        if file.endswith(".py") and not file.startswith("_"):
+            full_path = os.path.join(directory, file)
+            module_name = os.path.splitext(file)[0]
+            module = load_module_from_path(full_path)
+
+            # Assuming each script has a router named 'router'
+            if hasattr(module, "router"):
+                web_app.include_router(module.router)
+
 def discover_scripts(cli_app, web_app):
     # Get the global configuration
     config = get_config()
@@ -106,6 +123,8 @@ def discover_scripts(cli_app, web_app):
 
     # Process default scripts
     process_scripts_directory(default_scripts_directory, cli_app, web_app, script_source="Iterative Default")
+    endpoints_directory = os.path.join(os.getcwd(), "endpoints")
+    load_routers_from_directory(endpoints_directory, web_app)
 
     # Process user scripts
     if user_scripts_path:

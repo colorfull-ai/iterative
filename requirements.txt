@@ -24,11 +24,10 @@ grpcio==1.59.3
 grpcio-status==1.48.2
 h11==0.14.0
 httplib2==0.22.0
-humps==0.2.2
 idna==3.5
 inflect==7.0.0
 iniconfig==2.0.0
--e git+https://github.com/colorfull-ai/iterative.git@c03a8adc3ea71634f1e2097c6df28800245c266e#egg=iterative
+-e git+https://github.com/colorfull-ai/iterative.git@c963aef067ecb93327bd1cf0ff02f9e29186507f#egg=iterative
 markdown-it-py==3.0.0
 mdurl==0.1.2
 msgpack==1.0.7
@@ -43,6 +42,7 @@ pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pydantic==1.10.13
 Pygments==2.17.2
+pyhumps==3.8.0
 pyparsing==3.1.1
 pytest==6.2.5
 PyYAML==6.0.1

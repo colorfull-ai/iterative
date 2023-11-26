@@ -9,19 +9,18 @@ class ClassFinder(ast.NodeVisitor):
 
     def visit_ClassDef(self, node):
         for base in node.bases:
-            if isinstance(base, ast.Name) and base.id == 'BaseFirebaseModel':
+            if isinstance(base, ast.Name) and base.id == 'IterativeModel':
                 self.classes.append(node.name)
         self.generic_visit(node)
 
 def _generate_crud_endpoints(class_name):
-    class_name_camel = humps.camelize(class_name)  # CamelCase
     class_name_snake = humps.decamelize(class_name)  # snake_case
 
     return textwrap.dedent(f"""
     from typing import List, Optional
     from fastapi import APIRouter, HTTPException, Query
     from firebase_admin import firestore
-    from db_models import {class_name_camel}
+    from models.{class_name} import {class_name}
 
     db = firestore.client()
     router = APIRouter()
@@ -29,7 +28,7 @@ def _generate_crud_endpoints(class_name):
     @router.post("/{class_name_snake}s")
     async def create_{class_name_snake}({class_name_snake}_data: {class_name}):
         if {class_name}.get_by_id({class_name_snake}_data.id):
-            raise HTTPException(status_code=409, detail="{class_name_camel} already exists")
+            raise HTTPException(status_code=409, detail="{class_name} already exists")
         
         {class_name_snake}_data.save()
         return {class_name_snake}_data
@@ -38,14 +37,14 @@ def _generate_crud_endpoints(class_name):
     async def get_{class_name_snake}({class_name_snake}_id: str):
         {class_name_snake} = {class_name}.get_by_id({class_name_snake}_id)
         if not {class_name_snake}:
-            raise HTTPException(status_code=404, detail="{class_name_camel} not found")
+            raise HTTPException(status_code=404, detail="{class_name} not found")
         return {class_name_snake}
 
     @router.put("/{class_name_snake}s/{{{class_name_snake}_id}}")
     async def update_{class_name_snake}({class_name_snake}_id: str, {class_name_snake}_update: {class_name}):
         existing_{class_name_snake} = {class_name}.get_by_id({class_name_snake}_id)
         if not existing_{class_name_snake}:
-            raise HTTPException(status_code=404, detail="{class_name_camel} not found")
+            raise HTTPException(status_code=404, detail="{class_name} not found")
         existing_{class_name_snake}.merge({class_name_snake}_update.json())
         existing_{class_name_snake}.save()
         return existing_{class_name_snake}
@@ -54,7 +53,7 @@ def _generate_crud_endpoints(class_name):
     async def delete_{class_name_snake}({class_name_snake}_id: str):
         {class_name_snake} = {class_name}.get_by_id({class_name_snake}_id)
         if not {class_name_snake}:
-            raise HTTPException(status_code=404, detail="{class_name_camel} not found")
+            raise HTTPException(status_code=404, detail="{class_name} not found")
         {class_name_snake}.delete()
         return {class_name_snake}
 
@@ -69,7 +68,7 @@ def _generate_crud_endpoints(class_name):
 
         {class_name_snake}s = {class_name}.get_page(page=page, page_size=page_size, query_params=query_params)
         if not {class_name_snake}s:
-            raise HTTPException(status_code=404, detail="{class_name_camel}s not found")
+            raise HTTPException(status_code=404, detail="{class_name}s not found")
         return {class_name_snake}s
     """)
 

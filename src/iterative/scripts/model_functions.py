@@ -28,7 +28,7 @@ def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = N
     # Ensure the 'endpoints' directory exists
     os.makedirs(endpoints_path, exist_ok=True)
 
-    model_file_name = f"{humps.pascalize(model_name)}.py"
+    model_file_name = f"{model_name}.py"
     model_file_path = os.path.join(models_path, model_file_name)
 
     # Ensure the model file exists
@@ -73,9 +73,9 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
     class_name = entity_name.title().replace('_', '')
     file_name = f"{class_name}.py"
     file_path = os.path.join(model_folder, file_name)
-    model_content = f"""from nosql_yorm.models import BaseFirebaseModel
+    model_content = f"""from iterative import IterativeModel
 
-class {class_name}(BaseFirebaseModel):
+class {class_name}(IterativeModel):
     _collection_name = "{class_name}"
     # TODO: Add fields here
 """
