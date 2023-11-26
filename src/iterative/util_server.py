@@ -5,7 +5,7 @@ import typer
 import os
 import importlib.util
 import inspect
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 from .config import get_config
 from typing import Callable, get_type_hints
@@ -13,43 +13,13 @@ import uuid
 import json
 from functools import wraps
 from fastapi.openapi.utils import get_openapi
+from iterative.web import web_app 
 
 import uvicorn
 from .logger import get_logger
 
 cli_app = typer.Typer()
-web_app = FastAPI()
 
-@web_app.get("/")
-def root():
-    # redirect to docs
-    return RedirectResponse(url='/docs')
-
-def custom_openapi():
-    if web_app.openapi_schema:
-        return web_app.openapi_schema
-    
-    app_name = get_config().config.get("app_name", "Iterative App")
-    version = get_config().config.get("version", "v0.1.0")
-    description = get_config().config.get("description", "Initial Iterative APP Backend.")
-
-    openapi_schema = get_openapi(
-        title=app_name,
-        version=version,
-        description=description,
-        routes=web_app.routes,
-    )
-    
-    openapi_schema["servers"] = [
-        {
-            "url": os.getenv('HOST'),
-        }
-    ]
-
-    web_app.openapi_schema = openapi_schema
-    return web_app.openapi_schema
-
-web_app.openapi = custom_openapi
 
 def log_function_call(func):
     logger = get_logger(func.__name__)
@@ -135,15 +105,15 @@ def discover_scripts(cli_app, web_app):
     default_scripts_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
 
     # Process default scripts
-    process_scripts_directory(default_scripts_directory, cli_app, web_app)
+    process_scripts_directory(default_scripts_directory, cli_app, web_app, script_source="Iterative Default")
 
-    # If user provided a scripts path, process those scripts as well
+    # Process user scripts
     if user_scripts_path:
         if user_scripts_path == ".":
             iterative_app_scripts_directory = os.path.join(os.getcwd(), "scripts")
-            process_scripts_directory(iterative_app_scripts_directory, cli_app, web_app)
+            process_scripts_directory(iterative_app_scripts_directory, cli_app, web_app, script_source="User Script")
 
-def process_scripts_directory(directory, cli_app, web_app):
+def process_scripts_directory(directory, cli_app, web_app, script_source):
     # Skip if the directory doesn't exist
     if not os.path.exists(directory):
         print(f"'scripts' directory not found in {directory}")
@@ -161,8 +131,16 @@ def process_scripts_directory(directory, cli_app, web_app):
                         continue
                     snake_name = snake_case(name)
                     router = create_endpoint(func, snake_name)
-                    
-                    web_app.include_router(router)
+
+                    # Set tags based on the script source
+                    tag = None
+                    if script_source == "Iterative Default":
+                        tag = ["Iterative Default"]
+                    else:
+                        # Here, you can also prepend the script file name or any other identifier
+                        tag = [f"{script_source}: {file.replace('.py', '')}"]
+
+                    web_app.include_router(router, tags=tag)
                     logged_func = log_function_call(func)  # Apply decorator
                     cli_app.command(name=snake_name)(logged_func)
 
@@ -173,7 +151,7 @@ def run_ngrok_setup_script(script_path):
 
         # Wait for ngrok to set up completely (30 seconds)
         print("Waiting for ngrok to set up...")
-        time.sleep(15)
+        time.sleep(8)
 
         # Read environment variables from the temp file
         with open('/tmp/env_vars.txt', 'r') as file:
@@ -189,18 +167,58 @@ def run_ngrok_setup_script(script_path):
         print(f"Error reading environment variables from temp file: {e}")
 
 
+import subprocess
+import os
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+class ChangeHandler(FileSystemEventHandler):
+    def __init__(self, callback):
+        self.callback = callback
+
+    def on_any_event(self, event):
+        self.callback()
+
+def start_uvicorn(host, port, app_module):
+    # Terminate any existing Uvicorn process on the same port
+    subprocess.run(["pkill", "-f", f"uvicorn.*{port}"])
+    time.sleep(1)  # Give a moment for the port to become free
+
+    # Start a new Uvicorn process
+    return subprocess.Popen(["uvicorn", app_module, "--host", host, "--port", str(port)])
+
 def run_web_server(port: int):
-    # Construct the path to the Bash script dynamically
+    host = "0.0.0.0"
+    app_module = "iterative.web:web_app"
+
+    # Path to the run_ngrok.sh script
     script_directory = os.path.dirname(os.path.abspath(__file__))
     bash_script_path = os.path.join(script_directory, "run_ngrok.sh")
-
-    # Run the Bash script to set up ngrok and environment variables
     run_ngrok_setup_script(bash_script_path)
 
-    # Now, environment variables are set, and you can access them if needed
-    # For example: os.environ.get('WEBHOOK_DEV_LINK')
+    uvicorn_process = start_uvicorn(host, port, app_module)
 
-    host = "0.0.0.0"
-    os.environ['FASTAPI_HOST'] = host
-    os.environ['FASTAPI_PORT'] = str(port)
-    uvicorn.run(web_app, host=host, port=port)
+    def restart_uvicorn():
+        nonlocal uvicorn_process  # Declare uvicorn_process as nonlocal
+        uvicorn_process.kill()
+        uvicorn_process.wait()  # Wait for the process to terminate
+        uvicorn_process = start_uvicorn(host, port, app_module)
+
+    # Configure Watchdog
+    reload_dirs = get_config().get('reload_dirs', [])
+    event_handler = ChangeHandler(restart_uvicorn)
+    observer = Observer()
+
+    for directory in reload_dirs:
+        observer.schedule(event_handler, directory, recursive=True)
+
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+        uvicorn_process.kill()
+
+    observer.join()

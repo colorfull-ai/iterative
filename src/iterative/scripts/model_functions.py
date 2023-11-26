@@ -1,8 +1,8 @@
 import os
 from textwrap import dedent as _dedent
-from typing import Dict, List, Optional
-from iterative.config import get_config
-from iterative.scripts.create_endpoints_from_models import _generate_crud_endpoints
+from typing import  Optional
+from iterative.config import get_config as _get_config
+from iterative.scripts.endpoint_functions import _generate_crud_endpoints
 import humps
 
 def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = None, endpoints_path: Optional[str] = None):
@@ -16,8 +16,7 @@ def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = N
     """
     # Fetch paths from the global configuration if not provided
     if not models_path or not endpoints_path:
-        config = get_config()
-        base_path = config.get('model_generation_path', os.getcwd())
+        base_path = _get_config().config.get('model_generation_path', os.getcwd())
         models_path = models_path or os.path.join(base_path, 'models')
         endpoints_path = endpoints_path or os.path.join(base_path, 'endpoints')
 
@@ -48,7 +47,7 @@ def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = N
     print(f"CRUD endpoints for {model_name} created at {endpoints_file_path}")
 
 
-def create_model(entity_name: str, model_generation_path: Optional[str] = None):
+def generate_model(entity_name: str, model_generation_path: Optional[str] = None):
     """
     Create a basic nosql_yorm model file with the given entity name in a 'models' directory.
 
@@ -58,8 +57,7 @@ def create_model(entity_name: str, model_generation_path: Optional[str] = None):
     """
     # Fetch the model generation path from the global configuration if not provided
     if not model_generation_path:
-        config = get_config()
-        model_generation_path = config.get('model_generation_path', os.getcwd())
+        model_generation_path = _get_config().get('model_generation_path', os.getcwd())
 
     # Append 'models' to the model generation path to ensure the directory structure
     model_folder = os.path.join(model_generation_path, 'models')

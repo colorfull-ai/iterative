@@ -27,10 +27,10 @@ def init_command(directory: str):
     """
     init(directory)
 
+app.add_typer(cli_app, name="scripts")
+discover_scripts(cli_app, web_app)
 
 def start_app():
-    app.add_typer(cli_app, name="scripts")
-    discover_scripts(cli_app, web_app)
     app()
 
 
