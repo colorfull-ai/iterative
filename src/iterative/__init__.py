@@ -33,6 +33,8 @@ discover_scripts(cli_app, web_app)
 def start_app():
     app()
 
+if get_config().get("persist_cache_as_db", False):
+    cache.load_cache()
 
 
 # Export the public API
