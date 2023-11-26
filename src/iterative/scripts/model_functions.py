@@ -67,14 +67,16 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
     class_name = entity_name.title().replace('_', '')
     file_name = f"{class_name}.py"
     file_path = os.path.join(model_folder, file_name)
-    model_content = _dedent(f"""from iterative import IterativeModel
-                        from typing import *     
-                        from models import *  # Reduce the imports for better performance at a later time
+    model_content = _dedent(f"""\
+    from iterative import IterativeModel
+    from typing import *     
+    from models import *  # Reduce the imports for better performance at a later time
 
-class {class_name}(IterativeModel):
-    _collection_name = "{class_name}"
-    # TODO: Add fields here
-""")
+    class {class_name}(IterativeModel):
+        _collection_name = "{class_name}"
+        # TODO: Add fields here
+    """)
+
 
     # Write the model class to the file, overwriting any existing file
     with open(file_path, 'w') as file:
@@ -89,9 +91,7 @@ def add_property_to_model(entity_name: str, property_name: str, property_type: s
 
     Args:
         entity_name: Name of the entity to which the property should be added.
-        property_name: Name of the property to be added.
         property_type: The python data type of the property a primitive or Typing type.
-        model_generation_path: Path to the directory containing the model file.
     """
     model_folder = model_generation_path or os.getcwd()
     file_name = f"{entity_name}.py"
@@ -123,9 +123,7 @@ def edit_property_in_model(entity_name: str, property_name: str, new_type: str, 
 
     Args:
         entity_name: Name of the entity to which the property belongs.
-        property_name: Name of the property to be edited.
         new_type: The new python data type of the property a primitive or Typing type.
-        model_generation_path: Path to the directory containing the model file.
     """
     model_folder = model_generation_path or os.getcwd()
     file_name = f"{entity_name}.py".lower()
