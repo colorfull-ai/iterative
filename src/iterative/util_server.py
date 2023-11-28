@@ -1,24 +1,16 @@
 # util_server.py in admin_code subdirectory
 import subprocess
 import time
-import typer
 import os
 import importlib.util
 import inspect
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import RedirectResponse
 from .config import get_config
 from typing import Callable, get_type_hints
 import uuid
 import json
 from functools import wraps
-from fastapi.openapi.utils import get_openapi
-from iterative.web import web_app 
-
-import uvicorn
 from .logger import get_logger
-
-cli_app = typer.Typer()
 
 
 def log_function_call(func):
@@ -120,7 +112,7 @@ def discover_scripts(cli_app, web_app):
 
     # Directory containing the default scripts
     default_scripts_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
-
+    print("processing default scripts")
     # Process default scripts
     process_scripts_directory(default_scripts_directory, cli_app, web_app, script_source="Iterative Default")
     endpoints_directory = os.path.join(os.getcwd(), "endpoints")

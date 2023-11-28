@@ -3,9 +3,8 @@
 import json
 import os
 from typing import Dict
-import requests
-from iterative.config import get_config
 from fastapi.responses import JSONResponse
+from iterative.cache import cache
 
 def get_openapi_schema() -> Dict:
     """
@@ -48,7 +47,7 @@ def get_local_db_metrics() -> str:
         str: A JSON string containing metrics about the cache.
     """
     metrics = {}
-    collections = cache_handler.collections
+    collections = cache.collections
 
     # Total number of collections
     metrics['total_collections'] = len(collections)

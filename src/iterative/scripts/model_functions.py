@@ -1,4 +1,5 @@
 import os
+import re
 from textwrap import dedent as _dedent
 from typing import  Optional
 from iterative.config import get_config as _get_config
@@ -46,8 +47,7 @@ def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = N
 def generate_model(entity_name: str, model_generation_path: Optional[str] = None):
     """
     Create a basic nosql_yorm model file with the given entity name in a 'models' directory.
-
-
+    Also updates __init__.py to import the new model and add it to the __all__ list.
     """
     # Fetch the model generation path from the global configuration if not provided
     if not model_generation_path:
@@ -56,9 +56,9 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
     # Append 'models' to the model generation path to ensure the directory structure
     model_folder = os.path.join(model_generation_path, 'models')
 
+    # Create the models directory if it doesn't exist
     try:
-        if not os.path.exists(model_folder):
-            os.makedirs(model_folder)
+        os.makedirs(model_folder, exist_ok=True)
     except OSError as e:
         print(f"Error creating directory {model_folder}: {e}")
         return
@@ -69,18 +69,39 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
     file_path = os.path.join(model_folder, file_name)
     model_content = _dedent(f"""\
     from iterative import IterativeModel
-    from typing import *     
-    from models import *  # Reduce the imports for better performance at a later time
+    from typing import *
+    from iterative.models import * 
+                            
 
     class {class_name}(IterativeModel):
         _collection_name = "{class_name}"
         # TODO: Add fields here
     """)
 
-
-    # Write the model class to the file, overwriting any existing file
+    # Write the model class to the file
     with open(file_path, 'w') as file:
-        file.write(_dedent(model_content))
+        file.write(model_content)
+
+    # Update __init__.py to import the new model and add it to __all__
+    init_file = os.path.join(model_folder, '__init__.py')
+    init_content = ""
+    if os.path.exists(init_file):
+        with open(init_file, 'r') as file:
+            init_content = file.read()
+
+    # Append import statement
+    init_content += f"from .{class_name} import {class_name}\n"
+
+    # Update __all__ list
+    all_match = re.search(r'__all__\s*=\s*\[([^\]]*)\]', init_content)
+    if all_match:
+        all_list = all_match.group(1) + f', "{class_name}"'
+        init_content = re.sub(r'__all__\s*=\s*\[([^\]]*)\]', f'__all__ = [{all_list}]', init_content)
+    else:
+        init_content += f'\n__all__ = ["{class_name}"]\n'
+
+    with open(init_file, 'w') as file:
+        file.write(init_content)
 
     print(f"Model {class_name} created at {file_path}")
 

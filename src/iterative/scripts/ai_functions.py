@@ -1,6 +1,6 @@
 from typing import Any, Optional, Tuple
 from openai import OpenAI
-from iterative import get_config as _get_config
+from iterative.config import get_config as _get_config
 import time
 
 class OpenAIAssistantManager:

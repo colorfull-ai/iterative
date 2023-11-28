@@ -1,14 +1,13 @@
 from iterative.commands.template_commands import init
 import typer
-from iterative.util_server import discover_scripts, run_web_server, cli_app, web_app
-from iterative.config import Config, set_config, get_config
+from iterative.util_server import discover_scripts, run_web_server
+from iterative.user_cli import cli_app
+from iterative.web import web_app
+from iterative.config import Config, set_config
 from iterative.models import IterativeModel
 from iterative.cache import cache
 
-
-app = typer.Typer()
-
-@app.command()
+@cli_app.command()
 def start_util_server(
     port: int = typer.Option(5279, help="Port number for the utility server"),
     config_path: str = typer.Option(None, help="Path to the configuration file")
@@ -18,7 +17,7 @@ def start_util_server(
     """
     run_web_server(port)
 
-@app.command()
+@cli_app.command()
 def init_command(directory: str):
     """
     Initialize a new iterative app in the specified directory.
@@ -27,13 +26,11 @@ def init_command(directory: str):
 
 
 def start_app():
-    app.add_typer(cli_app, name="scripts")
+    cache.load_cache()
     discover_scripts(cli_app, web_app)
-    cache.load_cache()
-    app()
+    cli_app()
 
-if get_config().get("persist_cache_as_db", False):
-    cache.load_cache()
+discover_scripts(cli_app, web_app)
 
 
 # Export the public API
