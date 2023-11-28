@@ -1,11 +1,9 @@
-import os
 from iterative.commands.template_commands import init
 import typer
 from iterative.util_server import discover_scripts, run_web_server, cli_app, web_app
 from iterative.config import Config, set_config, get_config
-import logging
-from nosql_yorm.cache import cache_handler as cache
 from iterative.models import IterativeModel
+from iterative.cache import cache
 
 
 app = typer.Typer()
@@ -27,10 +25,11 @@ def init_command(directory: str):
     """
     init(directory)
 
-app.add_typer(cli_app, name="scripts")
-discover_scripts(cli_app, web_app)
 
 def start_app():
+    app.add_typer(cli_app, name="scripts")
+    discover_scripts(cli_app, web_app)
+    cache.load_cache()
     app()
 
 if get_config().get("persist_cache_as_db", False):

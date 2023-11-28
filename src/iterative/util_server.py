@@ -126,6 +126,7 @@ def discover_scripts(cli_app, web_app):
     endpoints_directory = os.path.join(os.getcwd(), "endpoints")
     load_routers_from_directory(endpoints_directory, web_app)
 
+    print(f"user_scripts_path {user_scripts_path}")
     # Process user scripts
     if user_scripts_path:
         if user_scripts_path == ".":
