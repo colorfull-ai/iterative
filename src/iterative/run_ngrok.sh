@@ -64,10 +64,11 @@ else
     NGROK_CMD="$NG http $PORT"
 fi
 
-# Execute ngrok
-pkill -f ngrok
+
 printf " ${C_GRN}Executing ngrok...${C_RST}\n\n"
-EXEC=$($NGROK_CMD >> /dev/null &)
+# EXEC=$($NGROK_CMD >> /dev/null &)
+$NGROK_CMD >> /dev/null &
+NGROK_PID=$!
 
 sleep 5s
 if ! [ -x "$(command -v curl)" ]; then
