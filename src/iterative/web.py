@@ -5,14 +5,14 @@ from fastapi.responses import RedirectResponse
 from iterative.config import get_config
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from iterative.util_server import discover_scripts
+from iterative.util_server import discover_actions
 from iterative.user_cli import cli_app
 
 web_app = FastAPI()
 
 @web_app.on_event("startup")
 def startup_event():
-    discover_scripts(cli_app, web_app)
+    discover_actions(cli_app, web_app)
 
 @web_app.get("/")
 def root():

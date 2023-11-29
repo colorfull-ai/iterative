@@ -105,9 +105,12 @@ def load_routers_from_directory(directory, web_app):
             if hasattr(module, "router"):
                 web_app.include_router(module.router)
 
-def discover_scripts(cli_app, web_app):
+def discover_actions(cli_app, web_app):
     # Get the global configuration
     config = get_config()
+    if not config.get("discover_actions"):
+        return
+    
     user_scripts_path = config.get("scripts_search_path")
 
     # Directory containing the default scripts

@@ -1,6 +1,6 @@
 from iterative.commands.template_commands import init
 import typer
-from iterative.util_server import discover_scripts, run_web_server, run_ngrok_subprocess
+from iterative.util_server import discover_actions, run_web_server, run_ngrok_subprocess
 from iterative.user_cli import cli_app
 from iterative.web import web_app as app
 from iterative.config import Config, set_config, get_config
@@ -28,7 +28,7 @@ def prep_app():
     config = Config(user_config_path="config.yaml")
     set_config(config)
     cache.load_cache()
-    discover_scripts(cli_app, app)
+    discover_actions(cli_app, app)
 
 def start_app():
     prep_app()
@@ -42,7 +42,7 @@ __all__ = [
     "app",
     "start_util_server",
     "start_app",
-    "discover_scripts",
+    "discover_actions",
     "run_web_server",
     "Config",
     "set_config",

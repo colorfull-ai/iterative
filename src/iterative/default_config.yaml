@@ -29,4 +29,5 @@ assistant_ids:
 default_ai_model: "gpt-3.5-turbo"
 FASTAPI_PORT: 5279
 FASTAPI_HOST: "0.0.0.0"
+do_not_discover: false
 
