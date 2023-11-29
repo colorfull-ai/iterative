@@ -96,8 +96,8 @@ sleep 1s
 LNK_HTTP="${FST}"
 LNK_HTTPS="${FST}"
 printf " ${C_BLE}NGROK Status: ${C_GRN}ONLINE${C_RST}\n\n"
-printf " ${C_BLE}Link (HTTPS): ${C_YLW}${LNK_HTTPS}${C_RST}\n"
-printf " ${C_BLE}HOST: ${C_YLW}${NGROK_DOMAIN}${C_RST}\n"
+printf " ${C_BLE}WEBHOOK_DEV_LINK Link (HTTPS): ${C_YLW}${LNK_HTTPS}${C_RST}\n"
+printf " ${C_BLE}HOST: ${C_YLW}http://${NGROK_DOMAIN}${C_RST}\n"
 printf " ${C_BLE}PORT: ${C_YLW}${PORT}${C_RST}\n"
 printf "\n"
 
