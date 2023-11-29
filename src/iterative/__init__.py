@@ -2,7 +2,7 @@ from iterative.commands.template_commands import init
 import typer
 from iterative.util_server import discover_scripts, run_web_server
 from iterative.user_cli import cli_app
-from iterative.web import web_app
+from iterative.web import web_app as app
 from iterative.config import Config, set_config
 from iterative.models import IterativeModel
 from iterative.cache import cache
@@ -27,10 +27,10 @@ def init_command(directory: str):
 
 def start_app():
     cache.load_cache()
-    discover_scripts(cli_app, web_app)
+    discover_scripts(cli_app, app)
     cli_app()
 
-discover_scripts(cli_app, web_app)
+discover_scripts(cli_app, app)
 
 
 # Export the public API
