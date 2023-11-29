@@ -1,9 +1,9 @@
 from iterative.commands.template_commands import init
 import typer
-from iterative.util_server import discover_scripts, run_web_server
+from iterative.util_server import discover_scripts, run_web_server, run_ngrok_subprocess
 from iterative.user_cli import cli_app
 from iterative.web import web_app as app
-from iterative.config import Config, set_config
+from iterative.config import Config, set_config, get_config
 from iterative.models import IterativeModel
 from iterative.cache import cache
 
@@ -24,13 +24,17 @@ def init_command(directory: str):
     """
     init(directory)
 
-
-def start_app():
+def prep_app():
+    config = Config(user_config_path="config.yaml")
+    set_config(config)
     cache.load_cache()
     discover_scripts(cli_app, app)
+
+def start_app():
+    prep_app()
     cli_app()
 
-discover_scripts(cli_app, app)
+prep_app()
 
 
 # Export the public API
@@ -42,9 +46,10 @@ __all__ = [
     "run_web_server",
     "Config",
     "set_config",
-    "_get_global_config"
     "logging",
     "package_logging",  # Only if you have custom logging functionality in your package
     "cache",
-    "IterativeModel"
+    "IterativeModel",
+    "run_ngrok_subprocess",
+    "get_config",
 ]

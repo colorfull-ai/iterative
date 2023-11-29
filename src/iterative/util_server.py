@@ -112,13 +112,11 @@ def discover_scripts(cli_app, web_app):
 
     # Directory containing the default scripts
     default_scripts_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
-    print("processing default scripts")
     # Process default scripts
     process_scripts_directory(default_scripts_directory, cli_app, web_app, script_source="Iterative Default")
     endpoints_directory = os.path.join(os.getcwd(), "endpoints")
     load_routers_from_directory(endpoints_directory, web_app)
 
-    print(f"user_scripts_path {user_scripts_path}")
     # Process user scripts
     if user_scripts_path:
         if user_scripts_path == ".":
@@ -196,6 +194,11 @@ def start_uvicorn(host, port, app_module):
     time.sleep(1)  # Allow time for the port to become free
     return subprocess.Popen(["uvicorn", app_module, "--host", host, "--port", str(port)])
 
+def run_ngrok_subprocess():
+    # Set up ngrok (assuming you have this function implemented)
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    bash_script_path = os.path.join(script_directory, "run_ngrok.sh")
+    run_ngrok_setup_script(bash_script_path)
 
 def run_web_server(port: int):
     host = "0.0.0.0"
