@@ -73,6 +73,24 @@ class ConversationManager:
         )
         return messages
 
+
+def talk_to_assistant(message: str):
+    client = OpenAI()
+    assistant_id = get_config().get("assistant_id")
+    conversation_manager = ConversationManager(client, assistant_id)
+
+    conversation_manager.create_conversation()
+    conversation_manager.add_message(message)
+    conversation_messages = conversation_manager.process_conversation()
+    return conversation_messages[0]
+
+def get_assistant_info():
+    client = OpenAI()
+    assistant_id = get_config().get("assistant_id")
+    assistant_manager = AssistantManager(client)
+    return assistant_manager.get_assistant_info(assistant_id)
+
+
 # if __name__ == "__main__":
 #     # # Usage
 #     client = OpenAI()
