@@ -74,3 +74,4 @@ def get_local_db_metrics() -> str:
 
     # Convert the metrics dictionary to a JSON string
     return json.dumps(metrics, indent=4)
+

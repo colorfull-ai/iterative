@@ -27,7 +27,8 @@ assistant_ids:
   codegen_assistant: ""
 
 default_ai_model: "gpt-3.5-turbo"
-FASTAPI_PORT: 5279
-FASTAPI_HOST: "0.0.0.0"
+fastapi_port: 5279
+fastapi_host: "0.0.0.0"
 do_not_discover: false
-
+assistant_id: ""
+assistant_conversation_thread_id: ""

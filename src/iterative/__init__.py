@@ -6,6 +6,7 @@ from iterative.web import web_app as app
 from iterative.config import Config, set_config, get_config
 from iterative.models import IterativeModel
 from iterative.cache import cache
+from iterative.scripts.ai_functions import AssistantManager, ConversationManager
 
 @cli_app.command()
 def start_util_server(
@@ -52,4 +53,6 @@ __all__ = [
     "IterativeModel",
     "run_ngrok_subprocess",
     "get_config",
+    "AssistantManager",
+    "ConversationManager"
 ]
