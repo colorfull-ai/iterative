@@ -32,3 +32,4 @@ fastapi_host: "0.0.0.0"
 do_not_discover: false
 assistant_id: ""
 assistant_conversation_thread_id: ""
+discover_actions: false
