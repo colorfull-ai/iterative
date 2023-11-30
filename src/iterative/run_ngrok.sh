@@ -71,45 +71,50 @@ $NGROK_CMD >> /dev/null &
 NGROK_PID=$!
 
 sleep 5s
+
+# Fetch ngrok tunnel URL
 if ! [ -x "$(command -v curl)" ]; then
-	unset API
-	API=$(wget -qO - $tnl | awk -F"," -v k=$lnpref '{
-		gsub(/{|}/,"")
-		for(i=1;i<=NF;i++){
-			if ( $i ~ k ){ printf "${i}" }
-		}
-	}')
+    unset API
+    API=$(wget -qO - $tnl | awk -F"," -v k=$lnpref '{
+        gsub(/{|}/,"")
+        for(i=1;i<=NF;i++){
+            if ( $i ~ k ){ printf "${i}" }
+        }
+    }')
 else
-	unset API
-	API=$(curl -s $tnl | awk -F"," -v k=$lnpref '{
-		gsub(/{|}/,"")
-		for(i=1;i<=NF;i++){
-			if ( $i ~ k ){ print $i }
-		}
-	}')
+    unset API
+    API=$(curl -s $tnl | awk -F"," -v k=$lnpref '{
+        gsub(/{|}/,"")
+        for(i=1;i<=NF;i++){
+            if ( $i ~ k ){ print $i }
+        }
+    }')
 fi
 API=${API//$sq}
 API=${API//$prefix}
 IFS=$'\n' read -rd '' -a FST <<<"$API"
 FST=${FST//http\:\/\/}
-sleep 1s
-LNK_HTTP="${FST}"
-LNK_HTTPS="${FST}"
+
+# Set LINK_HTTPS to ngrok tunnel URL or custom domain
+if [[ -n $NGROK_DOMAIN ]]; then
+    LINK_HTTPS="https://${NGROK_DOMAIN}"
+else
+    LINK_HTTPS="${FST}"
+fi
+
 printf " ${C_BLE}NGROK Status: ${C_GRN}ONLINE${C_RST}\n\n"
-printf " ${C_BLE}WEBHOOK_DEV_LINK Link (HTTPS): ${C_YLW}${LNK_HTTPS}${C_RST}\n"
-printf " ${C_BLE}HOST: ${C_YLW}http://${NGROK_DOMAIN}${C_RST}\n"
-printf " ${C_BLE}PORT: ${C_YLW}${PORT}${C_RST}\n"
-printf "\n"
+printf " ${C_BLE}WEBHOOK_DEV_LINK Link (HTTPS): ${C_YLW}${LINK_HTTPS}${C_RST}\n"
+printf " ${C_BLE}HOST: ${C_YLW}${LINK_HTTPS}${C_RST}\n"
+printf " ${C_BLE}PORT: ${C_YLW}${PORT}${C_RST}\n\n"
 
 # ######## Override the Environment Variables needed at run time ######
 export NGROK_EXECUTABLE=$NG
-# LNK_HTTPS is the HTTPS URL that ngrok provides
-export WEBHOOK_DEV_LINK=$LNK_HTTPS
-export CLOUD_RUN_SERVICE_URL=$LNK_HTTPS
-export HOST=$LNK_HTTPS
+export WEBHOOK_DEV_LINK=$LINK_HTTPS
+export CLOUD_RUN_SERVICE_URL=$LINK_HTTPS
+export HOST=$LINK_HTTPS
 
 # Write environment variables to a temp file
 echo "NGROK_EXECUTABLE=$NG" > /tmp/env_vars.txt
-echo "WEBHOOK_DEV_LINK=$LNK_HTTPS" >> /tmp/env_vars.txt
-echo "CLOUD_RUN_SERVICE_URL=$LNK_HTTPS" >> /tmp/env_vars.txt
-echo "HOST=$LNK_HTTPS" >> /tmp/env_vars.txt
+echo "WEBHOOK_DEV_LINK=$LINK_HTTPS" >> /tmp/env_vars.txt
+echo "CLOUD_RUN_SERVICE_URL=$LINK_HTTPS" >> /tmp/env_vars.txt
+echo "HOST=$LINK_HTTPS" >> /tmp/env_vars.txt
