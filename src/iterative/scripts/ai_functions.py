@@ -74,7 +74,13 @@ class ConversationManager:
         return messages
 
 
-def talk_to_assistant(message: str):
+def get_assistant_info():
+    client = OpenAI()
+    assistant_id = get_config().get("assistant_id")
+    assistant_manager = AssistantManager(client)
+    return assistant_manager.get_assistant_info(assistant_id)
+
+def ask_assistant(message: str, assistant_id: str = None, verbose: bool = False):
     client = OpenAI()
     assistant_id = get_config().get("assistant_id")
     conversation_manager = ConversationManager(client, assistant_id)
@@ -82,14 +88,9 @@ def talk_to_assistant(message: str):
     conversation_manager.create_conversation()
     conversation_manager.add_message(message)
     conversation_messages = conversation_manager.process_conversation()
-    return conversation_messages[0]
-
-def get_assistant_info():
-    client = OpenAI()
-    assistant_id = get_config().get("assistant_id")
-    assistant_manager = AssistantManager(client)
-    return assistant_manager.get_assistant_info(assistant_id)
-
+    if verbose:
+        print(conversation_messages.data)
+    return conversation_messages.data[0].content[0].text.value
 
 # if __name__ == "__main__":
 #     # # Usage
