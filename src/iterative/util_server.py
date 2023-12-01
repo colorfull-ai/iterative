@@ -11,7 +11,10 @@ import uuid
 import json
 from functools import wraps
 from .logger import get_logger
-
+import subprocess
+import os
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 def log_function_call(func):
     logger = get_logger(func.__name__)
@@ -180,10 +183,7 @@ def run_ngrok_setup_script(script_path):
         print(f"Error reading environment variables from temp file: {e}")
 
 
-import subprocess
-import os
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+
 
 class ChangeHandler(FileSystemEventHandler):
     def __init__(self, callback):
