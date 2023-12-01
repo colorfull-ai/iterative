@@ -27,6 +27,9 @@ def find_iterative_root(starting_directory):
 # else:
 #     print("No Iterative root found.")
 
+
+import os
+
 def main():
     app()
 

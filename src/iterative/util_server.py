@@ -1,5 +1,6 @@
 # util_server.py in admin_code subdirectory
 import subprocess
+import sys
 import time
 import os
 import importlib.util
@@ -16,6 +17,7 @@ import subprocess
 import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from iterative.cli import app as iterative_cli_app
 
 def log_function_call(func):
     logger = get_logger(func.__name__)
@@ -51,6 +53,11 @@ def snake_case(s: str) -> str:
     return s.replace("-", "_").replace(" ", "_")
 
 def load_module_from_path(path: str):
+    # Add the directory containing 'models' to sys.path
+    root_directory = find_iterative_root(os.getcwd())
+    if root_directory not in sys.path:
+        sys.path.insert(0, root_directory)
+
     spec = importlib.util.spec_from_file_location("module.name", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -120,7 +127,6 @@ def discover_actions(cli_app, web_app):
     if iterative_root:
         print(f"Iterative Project Found at {iterative_root}.")
         iterative_scripts_directory = os.path.join(iterative_root, get_config().get(user_scripts_path, "scripts"))
-        endpoints_directory = os.path.join(iterative_root, "endpoints")
         process_scripts_directory(iterative_scripts_directory, cli_app, web_app, script_source="User Script")
         endpoints_directory = os.path.join(iterative_root, "endpoints")
         load_routers_from_directory(endpoints_directory, web_app)
@@ -129,8 +135,11 @@ def discover_actions(cli_app, web_app):
 
 
 def find_and_process_package_scripts(cli_app, web_app):
+    print("Searching for package scripts...")
     # Process default scripts
     default_scripts_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
+    print(f"Processing default scripts in {default_scripts_directory}")
+
     process_scripts_directory(default_scripts_directory, cli_app, web_app, script_source="Iterative Default")
 
 def process_scripts_directory(directory, cli_app, web_app, script_source):
@@ -163,6 +172,7 @@ def process_scripts_directory(directory, cli_app, web_app, script_source):
                     web_app.include_router(router, tags=tag)
                     logged_func = log_function_call(func)  # Apply decorator
                     cli_app.command(name=snake_name)(logged_func)
+                    iterative_cli_app.command(name=snake_name)(logged_func)
 
 
 def run_ngrok_setup_script(script_path):
