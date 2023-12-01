@@ -5,6 +5,7 @@ import os
 import importlib.util
 import inspect
 from fastapi import APIRouter, HTTPException
+from iterative.cli import find_iterative_root
 from .config import get_config
 from typing import Callable, get_type_hints
 import uuid
@@ -109,25 +110,28 @@ def load_routers_from_directory(directory, web_app):
                 web_app.include_router(module.router)
 
 def discover_actions(cli_app, web_app):
-    # Get the global configuration
-    config = get_config()
-    if not config.get("discover_actions"):
+    iterative_root = find_iterative_root(os.getcwd())
+    user_scripts_path = get_config().get("scripts_search_path")
+
+    if not get_config().get("discover_actions"):
+        print("Action discovery is disabled. Exiting discovery process.")
         return
-    
-    user_scripts_path = config.get("scripts_search_path")
 
-    # Directory containing the default scripts
-    default_scripts_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
+    if iterative_root:
+        print(f"Iterative Project Found at {iterative_root}.")
+        iterative_scripts_directory = os.path.join(iterative_root, get_config().get(user_scripts_path, "scripts"))
+        endpoints_directory = os.path.join(iterative_root, "endpoints")
+        process_scripts_directory(iterative_scripts_directory, cli_app, web_app, script_source="User Script")
+        endpoints_directory = os.path.join(iterative_root, "endpoints")
+        load_routers_from_directory(endpoints_directory, web_app)
+
+    find_and_process_package_scripts(cli_app, web_app)
+
+
+def find_and_process_package_scripts(cli_app, web_app):
     # Process default scripts
+    default_scripts_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
     process_scripts_directory(default_scripts_directory, cli_app, web_app, script_source="Iterative Default")
-    endpoints_directory = os.path.join(os.getcwd(), "endpoints")
-    load_routers_from_directory(endpoints_directory, web_app)
-
-    # Process user scripts
-    if user_scripts_path:
-        if user_scripts_path == ".":
-            iterative_app_scripts_directory = os.path.join(os.getcwd(), "scripts")
-            process_scripts_directory(iterative_app_scripts_directory, cli_app, web_app, script_source="User Script")
 
 def process_scripts_directory(directory, cli_app, web_app, script_source):
     # Skip if the directory doesn't exist

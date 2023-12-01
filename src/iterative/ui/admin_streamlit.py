@@ -1,7 +1,6 @@
 import streamlit as st
 from streamlit_chat import message
 from iterative import ask_assistant
-from config import iterative_config as _
 
 # Initialize Streamlit session state
 if 'past' not in st.session_state:
