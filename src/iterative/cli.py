@@ -20,16 +20,4 @@ def find_iterative_root(starting_directory):
 
     return None  # Return None if .iterative directory is not found
 
-# Usage
-# iterative_root = find_iterative_root(os.getcwd())
-# if iterative_root is not None:
-#     print(f"Found Iterative root at: {iterative_root}")
-# else:
-#     print("No Iterative root found.")
-
-
-import os
-
-def main():
-    app()
 

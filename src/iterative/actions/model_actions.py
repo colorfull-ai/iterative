@@ -3,7 +3,7 @@ import re
 from textwrap import dedent as _dedent
 from typing import  Optional
 from iterative.config import get_config as _get_config
-from iterative.scripts.endpoint_functions import _generate_crud_endpoints
+from iterative.actions.endpoint_actions import _generate_crud_endpoints
 import humps
 
 def generate_endpoints_for_model(model_name: str, models_path: Optional[str] = None, endpoints_path: Optional[str] = None):

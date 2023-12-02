@@ -2,17 +2,18 @@
 import os
 from fastapi import  FastAPI
 from fastapi.responses import RedirectResponse
+from iterative.action_processing import get_all_actions
 from iterative.config import get_config
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from iterative.util_server import discover_actions
-from iterative.user_cli import cli_app
+from iterative.web_app_integration import integrate_actions_into_web_app
 
 web_app = FastAPI()
 
 @web_app.on_event("startup")
 def startup_event():
-    discover_actions(cli_app, web_app)
+    actions = get_all_actions()
+    integrate_actions_into_web_app(actions, web_app)
 
 @web_app.get("/")
 def root():

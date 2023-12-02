@@ -5,8 +5,8 @@ from nosql_yorm.config import Config as NosqlYormConfig, set_config as set_nosql
 class Config:
     def __init__(self, user_config_path=None, merge_config=True):
         # Load the default configuration for iterative
-        iterative_default_config_path = os.path.join(os.path.dirname(__file__), 'default_config.yaml')
-        self.default_config = OmegaConf.load(iterative_default_config_path) if os.path.exists(iterative_default_config_path) else OmegaConf.create()
+        iterative_default_config_path = self.find_iterative_config()
+        self.default_config = OmegaConf.load(iterative_default_config_path) if iterative_default_config_path else OmegaConf.create()
 
         # Load the nosql_yorm default configuration and merge it
         nosql_yorm_config = NosqlYormConfig()
@@ -21,7 +21,21 @@ class Config:
         # Set the merged configuration as the nosql_yorm configuration
         set_nosql_yorm_config(self)
 
+    def find_iterative_config(self):
+        current_dir = os.getcwd()
+        while True:
+            possible_config_path = os.path.join(current_dir, ".iterative", 'config.yaml')
+            if os.path.exists(possible_config_path):
+                return possible_config_path
+            new_dir = os.path.dirname(current_dir)
+            if new_dir == current_dir:
+                # Root directory reached without finding the config file
+                return None
+            current_dir = new_dir
+
     def get(self, key, default=None):
+        if not key:
+            return default
         return self.config.get(key, default)
 
     def merge_config(self, other_config):

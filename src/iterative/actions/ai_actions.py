@@ -1,5 +1,8 @@
+import inspect
+from typing import Any, Dict, List
 from openai import OpenAI
 from iterative import get_config
+from openai_assistant_toolkit import create_function_tool_from_callback
 
 class AssistantManager:
     def __init__(self, client):
@@ -92,17 +95,69 @@ def ask_assistant(message: str, assistant_id: str = None, verbose: bool = False)
         print(conversation_messages.data)
     return conversation_messages.data[0].content[0].text.value
 
-# if __name__ == "__main__":
-#     # # Usage
-#     client = OpenAI()
-#     assistant_id = "asst_puhjAkOSsC6qxJyQ7Xw9oKoq"
-#     assistant_manager = AssistantManager(client)
-#     conversation_manager = ConversationManager(client, assistant_id)
+def give_assistant_tools(cli_app, web_app):
+    cli_functions = parse_typer_app(cli_app)
+    web_functions = parse_fastapi_app(web_app)
 
-#     # Example calls
-#     assistants = assistant_manager.list_assistants()
-#     assistant_info = assistant_manager.get_assistant_info(assistant_id)
-#     conversation_manager.create_conversation()
-#     conversation_manager.add_message("Hello World")
-#     conversation_messages = conversation_manager.process_conversation()
-#     print(conversation_messages)
+    tools = []
+    tools.extend(cli_functions)
+    tools.extend(web_functions)
+    return tools
+
+def parse_typer_app(app) -> List[Dict[str, Any]]:
+    # Extract commands from the Typer app
+    functions = []
+    for command_info in app.registered_commands:
+        # Typer stores the command name in the 'name' attribute of the CommandInfo object
+        command_name = command_info.name
+        command_callback = command_info.callback
+        function = create_function_tool_from_callback(command_name, command_callback)
+        functions.append(function)
+    return functions
+
+
+def parse_fastapi_app(app) -> List[Dict[str, Any]]:
+    # Extract routes from the FastAPI app
+    functions = []
+    for route in app.routes:
+        # Assuming each route is a standard FastAPI route with relevant attributes
+        if hasattr(route, "methods") and hasattr(route, "endpoint"):
+            function = create_function_tool_from_endpoint(route)
+            functions.append(function)
+    return functions
+
+def create_function_tool_from_callable(name, callback):
+    create_function_tool_from_callback(name, callback)
+
+def create_function_tool_from_endpoint(route):
+    # Generate function tool from a FastAPI route
+    method = route.methods
+    path = route.path
+    callback = route.endpoint
+    description = callback.__doc__ or ""
+    name = callback.__name__
+
+    # Extracting parameter details from the callback function
+    params = inspect.signature(callback).parameters
+    parameters = {
+        "type": "object",
+        "properties": {},
+        "required": []
+    }
+
+    for param_name, param in params.items():
+        parameters["properties"][param_name] = {
+            "type": str(param.annotation),
+            "description": param_name  # or a more detailed description if available
+        }
+        if param.default is param.empty:
+            parameters["required"].append(param_name)
+
+    return {
+        "type": "function",
+        "function": {
+            "name": name,
+            "description": description,
+            "parameters": parameters
+        }
+    }

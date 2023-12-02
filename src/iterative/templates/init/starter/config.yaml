@@ -1,2 +1,2 @@
-scripts_search_path: "."
+actions_search_path: "."
 read_write_to_cache: True

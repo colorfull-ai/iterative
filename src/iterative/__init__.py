@@ -1,41 +1,34 @@
-from iterative.commands.template_commands import init
-import typer
-from iterative.util_server import discover_actions, run_web_server, run_ngrok_subprocess
-from iterative.user_cli import cli_app
-from iterative.web import web_app as app
+from iterative.action_processing import get_all_actions
+from iterative.cli_app_integration import integrate_actions_into_cli_app
+from iterative.web_app_integration import integrate_actions_into_web_app
+from iterative.server_management import run_web_server
+from iterative.user_cli import iterative_cli_app as iterative_user_cli_app
+from iterative.web import web_app as iterative_user_web_app
+from iterative.cli import app as iterative_package_cli_app
 from iterative.config import Config, set_config, get_config
 from iterative.models import IterativeModel
 from iterative.cache import cache
-from iterative.scripts.ai_functions import AssistantManager, ConversationManager, ask_assistant, get_assistant_info
+from iterative.actions.ai_actions import AssistantManager, ConversationManager, ask_assistant, get_assistant_info
 
-@cli_app.command()
-def start_util_server(
-    port: int = typer.Option(5279, help="Port number for the utility server"),
-    config_path: str = typer.Option(None, help="Path to the configuration file")
-):
-    """
-    Starts the utility server on the specified port.
-    """
-    run_web_server(port)
-
-@cli_app.command()
-def init_command(directory: str):
-    """
-    Initialize a new iterative app in the specified directory.
-    """
-    init(directory)
 
 def prep_app():
     config = Config(user_config_path="config.yaml")
     set_config(config)
     cache.load_cache()
-    discover_actions(cli_app, app)
+    actions = get_all_actions()
+    print(f"Found {len(actions)} actions.")
+    integrate_actions_into_cli_app(actions, iterative_package_cli_app)
+    integrate_actions_into_cli_app(actions, iterative_user_cli_app)
+    integrate_actions_into_web_app(actions, iterative_user_web_app)
+    
 
 def start_app():
     prep_app()
-    cli_app()
+    iterative_user_cli_app()
 
-prep_app()
+def main():
+    prep_app()
+    iterative_package_cli_app()
 
 
 # Export the public API
