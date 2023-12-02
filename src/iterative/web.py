@@ -1,6 +1,6 @@
 # util_server.py in admin_code subdirectory
 import os
-from fastapi import  FastAPI
+from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from iterative.action_processing import get_all_actions
 from iterative.config import get_config
@@ -8,43 +8,49 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from iterative.web_app_integration import integrate_actions_into_web_app
 
-web_app = FastAPI()
+iterative_user_web_app = FastAPI()
 
-@web_app.on_event("startup")
+
+@iterative_user_web_app.on_event("startup")
 def startup_event():
     actions = get_all_actions()
-    integrate_actions_into_web_app(actions, web_app)
+    integrate_actions_into_web_app(actions, iterative_user_web_app)
 
-@web_app.get("/")
+
+@iterative_user_web_app.get("/")
 def root():
     # redirect to docs
-    return RedirectResponse(url='/docs')
+    return RedirectResponse(url="/docs")
+
 
 def custom_openapi():
-    if web_app.openapi_schema:
-        return web_app.openapi_schema
-    
+    if iterative_user_web_app.openapi_schema:
+        return iterative_user_web_app.openapi_schema
+
     app_name = get_config().config.get("app_name", "Iterative App")
     version = get_config().config.get("version", "v0.1.0")
-    description = get_config().config.get("description", "Initial Iterative APP Backend.")
+    description = get_config().config.get(
+        "description", "Initial Iterative APP Backend."
+    )
 
     openapi_schema = get_openapi(
         title=app_name,
         version=version,
         description=description,
-        routes=web_app.routes,
+        routes=iterative_user_web_app.routes,
     )
-    
+
     openapi_schema["servers"] = [
         {
-            "url": os.getenv('HOST'),
+            "url": os.getenv("HOST"),
         }
     ]
 
-    web_app.openapi_schema = openapi_schema
-    return web_app.openapi_schema
+    iterative_user_web_app.openapi_schema = openapi_schema
+    return iterative_user_web_app.openapi_schema
 
-web_app.openapi = custom_openapi
+
+iterative_user_web_app.openapi = custom_openapi
 
 # Add CORS middleware
 origins = [
@@ -53,7 +59,7 @@ origins = [
 ]
 
 
-web_app.add_middleware(
+iterative_user_web_app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,

@@ -8,29 +8,6 @@ import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-def run_ngrok_setup_script(script_path):
-    try:
-        subprocess.run(["bash", script_path], check=True)
-
-        # Wait for ngrok to set up completely (30 seconds)
-        print("Waiting for ngrok to set up...")
-        time.sleep(8)
-
-        # Read environment variables from the temp file
-        with open('/tmp/env_vars.txt', 'r') as file:
-            for line in file:
-                key, value = line.strip().split('=', 1)
-                os.environ[key] = value
-
-        print(f"HOST variable set to: {os.environ.get('HOST')}")
-        print("ngrok and environment variables set up successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"An error occurred while running the ngrok setup script: {e}")
-    except IOError as e:
-        print(f"Error reading environment variables from temp file: {e}")
-
-
-
 
 class ChangeHandler(FileSystemEventHandler):
     def __init__(self, callback):
@@ -90,3 +67,25 @@ def run_web_server(port: int):
         uvicorn_process.kill()
 
     observer.join()
+
+
+def run_ngrok_setup_script(script_path):
+    try:
+        subprocess.run(["bash", script_path], check=True)
+
+        # Wait for ngrok to set up completely (30 seconds)
+        print("Waiting for ngrok to set up...")
+        time.sleep(8)
+
+        # Read environment variables from the temp file
+        with open('/tmp/env_vars.txt', 'r') as file:
+            for line in file:
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
+
+        print(f"HOST variable set to: {os.environ.get('HOST')}")
+        print("ngrok and environment variables set up successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while running the ngrok setup script: {e}")
+    except IOError as e:
+        print(f"Error reading environment variables from temp file: {e}")

@@ -1,23 +1,27 @@
+from __future__ import annotations
+
 from iterative import IterativeModel
+from iterative.models.iterative import IterativeModel
+from pydantic import BaseModel
 import yaml
 
-class File(IterativeModel):
+class File(BaseModel):
     name: str
     path: str
     file_type: str  # e.g., '.py', '.js', '.json', etc.
     size: int       # in bytes
 
-class Directory(IterativeModel):
+class Directory(BaseModel):
     name: str
     path: str
     files: list[File]
     subdirectories: list['Directory']  # List of subdirectories
 
-class Configuration(IterativeModel):
+class Configuration(BaseModel):
     config_type: str   # e.g., 'docker', 'webpack', 'database'
     settings: dict     # Key-value pairs for configuration settings
 
-class IterativeAppConfig(IterativeModel):
+class IterativeAppConfig(BaseModel):
     actions_search_path: str
     model_generation_path: str
     reload_dirs: list[str]
@@ -39,11 +43,12 @@ class IterativeAppConfig(IterativeModel):
             config_data = yaml.safe_load(file)
         return IterativeAppConfig(**config_data)
 
-class Project(IterativeModel):
+
+class Project(BaseModel):
     name: str
     root_directory: Directory
     configurations: list[Configuration]
-    subprojects: list['Project']
+    subprojects: list[Project]
     iterative_app_config: IterativeAppConfig
 
     def __init__(self, name, root_directory):

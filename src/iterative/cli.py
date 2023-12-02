@@ -1,9 +1,10 @@
 # src/iterative/cli.py
 
+from iterative.server_management import run_web_server
 import typer
 import os
 
-app = typer.Typer()
+iterative_cli_app = typer.Typer()
 
 def find_iterative_root(starting_directory):
     current_directory = starting_directory
@@ -21,3 +22,12 @@ def find_iterative_root(starting_directory):
     return None  # Return None if .iterative directory is not found
 
 
+@iterative_cli_app.command()
+def start_server(
+    port: int = typer.Option(5279, help="Port number for the utility server"),
+    config_path: str = typer.Option(None, help="Path to the configuration file")
+):
+    """
+    Starts the utility server on the specified port.
+    """
+    run_web_server(port)

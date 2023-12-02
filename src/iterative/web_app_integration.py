@@ -1,8 +1,9 @@
 from functools import wraps
 import os
-from fastapi import APIRouter, HTTPException
-from typing import Callable, get_type_hints
+from fastapi import APIRouter, FastAPI, HTTPException
+from typing import Callable, List, get_type_hints
 import inspect
+from iterative.models.action import Action
 
 from iterative.utils import load_module_from_path, snake_case
 
@@ -59,12 +60,14 @@ def load_routers_from_directory(directory, web_app):
             if hasattr(module, "router"):
                 web_app.include_router(module.router)
 
-def integrate_actions_into_web_app(actions, web_app):
+def integrate_actions_into_web_app(actions: List[Action], web_app: FastAPI):
     for action in actions:
-        snake_name = snake_case(action['name'])
-        router = create_endpoint(action['function'], snake_name)
+        snake_name = snake_case(action.get_name())
+        router = create_endpoint(action.get_function(), snake_name)
+        script_source = action.get_script_source()
+        file = action.get_file()
 
         # Determine tags based on script source
-        tag = [f"{action['script_source']}: {action['file'].replace('.py', '')}"] if action['script_source'] != "Iterative Default" else ["Iterative Default"]
+        tag = [f"{script_source}: {file.replace('.py', '')}"] if script_source != "Iterative Default" else ["Iterative Default"]
 
         web_app.include_router(router, tags=tag)

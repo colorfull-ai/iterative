@@ -1,3 +1,5 @@
+import os
+import shutil
 import typer
 import subprocess
 
@@ -11,5 +13,4 @@ def run_chat_ui():
     # Assuming your Streamlit app is in 'streamlit_app.py'
     subprocess.run(["streamlit", "run", "streamlit_app.py"])
 
-if __name__ == "__main__":
-    app()
+

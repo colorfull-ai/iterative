@@ -1,19 +1,41 @@
-from omegaconf import OmegaConf
 import os
+from iterative.models.config import IterativeAppConfig
+from omegaconf import OmegaConf
 from nosql_yorm.config import Config as NosqlYormConfig, set_config as set_nosql_yorm_config
+from pydantic import ValidationError
 
 class Config:
     def __init__(self, user_config_path=None, merge_config=True):
         # Load the default configuration for iterative
         iterative_default_config_path = self.find_iterative_config()
-        self.default_config = OmegaConf.load(iterative_default_config_path) if iterative_default_config_path else OmegaConf.create()
+        if iterative_default_config_path:
+            with open(iterative_default_config_path, 'r') as file:
+                default_config_data = OmegaConf.load(file)
+        else:
+            default_config_data = {}
+
+        # Validate default configuration with IterativeAppConfig model
+        try:
+            self.default_config = IterativeAppConfig(**default_config_data)
+        except ValidationError as e:
+            print(f"Validation error in the default configuration: {e}")
+            raise
 
         # Load the nosql_yorm default configuration and merge it
         nosql_yorm_config = NosqlYormConfig()
-        self.default_config = OmegaConf.merge(self.default_config, nosql_yorm_config.config)
+        self.default_config = OmegaConf.merge(OmegaConf.create(self.default_config.dict()), nosql_yorm_config.config)
 
-        # Load the user configuration if provided
-        self.user_config = OmegaConf.load(user_config_path) if user_config_path and os.path.exists(user_config_path) else OmegaConf.create()
+        # Load and validate the user configuration if provided
+        if user_config_path and os.path.exists(user_config_path):
+            with open(user_config_path, 'r') as file:
+                user_config_data = OmegaConf.load(file)
+            try:
+                self.user_config = IterativeAppConfig(**user_config_data)
+            except ValidationError as e:
+                print(f"Validation error in the user configuration: {e}")
+                raise
+        else:
+            self.user_config = OmegaConf.create()
 
         # Merge configurations
         self.config = OmegaConf.merge(self.default_config, self.user_config) if merge_config else self.user_config
@@ -21,11 +43,14 @@ class Config:
         # Set the merged configuration as the nosql_yorm configuration
         set_nosql_yorm_config(self)
 
+        
     def find_iterative_config(self):
         current_dir = os.getcwd()
         while True:
             possible_config_path = os.path.join(current_dir, ".iterative", 'config.yaml')
+            print(f"Checking for config at {possible_config_path}")
             if os.path.exists(possible_config_path):
+                print(f"Found config at {possible_config_path}")
                 return possible_config_path
             new_dir = os.path.dirname(current_dir)
             if new_dir == current_dir:
@@ -50,6 +75,7 @@ class Config:
         self.config = OmegaConf.merge(self.config, other_config.config)
         set_nosql_yorm_config(self)
         return self
+
 
 # Global shared configuration instance
 _shared_config = Config()
