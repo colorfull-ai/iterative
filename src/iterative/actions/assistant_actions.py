@@ -5,6 +5,9 @@ from openai import OpenAI
 from iterative import get_config as _get_config
 from iterative import get_all_actions as _get_all_actions
 from tqdm import tqdm
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class AssistantManager:
@@ -73,9 +76,7 @@ class ConversationManager:
         )
 
     def process_conversation(self):
-        verbose = _get_config().get("verbose", False)
-        if verbose:
-            print("Processing conversation...")
+        logger.debug("Processing conversation...")
 
         if not self.current_thread:
             raise Exception("No active conversation thread.")
@@ -130,9 +131,7 @@ class ConversationManager:
         return action_result
 
     def submit_tool_outputs(self, tool_outputs: List[Dict]):
-        verbose = _get_config().get("verbose", False)
-        if verbose:
-            print("Submitting tool outputs...")
+        logger.debug("Submitting tool outputs...")
 
         for _ in tqdm(range(300), desc="Submitting...", leave=False):
             time.sleep(0.03)
@@ -145,19 +144,16 @@ class ConversationManager:
         return run
 
 def get_assistant_info():
-    verbose = _get_config().get("verbose", False)
     client = OpenAI()
     assistant_id = _get_config().get("assistant_id")
     assistant_manager = AssistantManager(client)
     assistant_info = assistant_manager.get_assistant_info(assistant_id)
 
-    if verbose:
-        print("Assistant Information:", assistant_info)
+    logger.debug("Assistant Information:", assistant_info)
 
     return assistant_info
 
 def ask_assistant(message: str, assistant_id: str = None):
-    verbose = _get_config().get("verbose", False)
     client = OpenAI()
     assistant_id = _get_config().get("assistant_id")
     conversation_manager = ConversationManager(client, assistant_id)
@@ -224,3 +220,10 @@ def get_actions():
             functions.append(function)
             
     return functions
+
+# def run_chat_ui():
+#     """
+#     Run the Streamlit chat application.
+#     """
+#     # Assuming your Streamlit app is in 'streamlit_app.py'
+#     subprocess.run(["streamlit", "run", "streamlit_app.py"])

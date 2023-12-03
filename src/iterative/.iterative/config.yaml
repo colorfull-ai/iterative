@@ -4,19 +4,14 @@ api_generation_path: "api"
 tests_path: "tests"
 tests_path: "service"
 logging_level: "DEBUG"
-reload_dirs:
-  - "backend"
 reload: true
 persist_cache_as_db: false
-verbose: true
 default_ai_model: "gpt-3.5-turbo"
 fastapi_port: 5279
 fastapi_host: "0.0.0.0"
 do_not_discover: false
 assistant_id: ""
 assistant_conversation_thread_id: ""
-discover_actions: true  # Enable discovery of actions by the AI
 actions_cap: 128          # Set the cap for actions
 actions_count: 0          # Updated dynamically to reflect the current count
 warn_threshold: 100       # When to start warning about nearing the cap
-recommend_new_app: false  # Flag to recommend a new app creation when near cap

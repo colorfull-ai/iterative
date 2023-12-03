@@ -14,6 +14,10 @@ def get_api_routers():
     """
     api_path = get_config().get("api_search_path", "api")
     iterative_root = find_iterative_root(os.getcwd())
+    if not iterative_root:
+        iterative_root = os.getcwd()
+        logger.debug(f"Could not find iterative root. Using current working directory: {iterative_root}")
+        
     api_directory = os.path.join(iterative_root, api_path)
 
     routers: List[APIRouter] = []
@@ -28,5 +32,5 @@ def get_api_routers():
                             routers.append(obj)
 
     logger.debug(f"Found {len(routers)} routers in {api_directory}")
-    
+
     return routers

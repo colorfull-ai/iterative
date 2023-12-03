@@ -1,31 +1,29 @@
+read_write_to_cache: true
+reload: true
+
+persist_cache_as_db: false
+ngrok_domain: colorfull.ngrok.io
+run_ngrok: true
+fastapi_port: 8000
+fastapi_host: "0.0.0.0"
+assistant_id: "asst_puhjAkOSsC6qxJyQ7Xw9oKoq"
+assistant_conversation_thread_id: ""
+
+reload: true
+
+
+persist_cache_as_db: true
+do_not_discover: false
+
+
 actions_search_path: "actions"  
 model_generation_path: "models"
 api_generation_path: "api"
 tests_path: "tests"
-reload_dirs:
-  - "backend"
+tests_path: "service"
+logging_level: "DEBUG"
 reload: true
 persist_cache_as_db: false
-
 default_ai_model: "gpt-3.5-turbo"
-fastapi_port: 5279
-fastapi_host: "0.0.0.0"
 do_not_discover: false
-assistant_id: ""
-assistant_conversation_thread_id: ""
-discover_actions: true  # Enable discovery of actions by the AI
 
-
-discover_actions: true          # If true, AI/CLI/web app will discover actions
-
-# Example action settings
-action_discovery: 
-  cli: true                     # Enable discovery of actions by CLI
-  web_app: true                 # Enable discovery of actions by web app
-  ai: true                      # Enable discovery of actions by AI
-
-
-actions_cap: 128          # Set the cap for actions
-actions_count: 0          # Updated dynamically to reflect the current count
-warn_threshold: 100       # When to start warning about nearing the cap
-recommend_new_app: false  # Flag to recommend a new app creation when near cap

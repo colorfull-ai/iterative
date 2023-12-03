@@ -15,10 +15,6 @@ def get_project_actions():
 
     actions = []
 
-    if not get_config().get("discover_actions"):
-        print("Action discovery is disabled. Exiting discovery process.")
-        return actions
-
     if iterative_root:
         logger.debug(f"Iterative Project Found at {iterative_root}.")
         logger.debug(f"Searching for actions in {user_actions_path}...")

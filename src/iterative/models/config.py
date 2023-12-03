@@ -29,6 +29,4 @@ class IterativeAppConfig(IterativeModel):
     do_not_discover: Optional[bool]
     assistant_id: Optional[str]
     assistant_conversation_thread_id: Optional[str]
-    discover_actions: Optional[bool]
-    verbose: Optional[bool] = True
     logging_level: Optional[LoggingLevel] = LoggingLevel.INFO
