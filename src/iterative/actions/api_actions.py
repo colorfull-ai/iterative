@@ -22,7 +22,6 @@ def _generate_crud_endpoints(class_name):
     from firebase_admin import firestore
     from models.{class_name} import {class_name}
 
-    db = firestore.client()
     router = APIRouter()
 
     @router.post("/{class_name_snake}s")

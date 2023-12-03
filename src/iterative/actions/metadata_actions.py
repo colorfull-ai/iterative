@@ -13,12 +13,16 @@ def get_openapi_schema() -> Dict:
     Returns:
     dict: The OpenAPI schema as a dictionary.
     """
-    from iterative.web import web_app
-    return JSONResponse(web_app.openapi_schema)
+    from iterative import web_app
+
+    print(web_app.openapi())
+
+    return web_app.openapi()
 
 def generate_directory_tree(startpath: str = '.') -> str:
     """
-    Generates a string representing the tree structure of the directory.
+    Generates a string representing the tree structure of the directory,
+    ignoring __pycache__ directories.
 
     Args:
         startpath (str): The starting directory path. Defaults to the current directory.
@@ -29,14 +33,18 @@ def generate_directory_tree(startpath: str = '.') -> str:
     tree = []
 
     for root, dirs, files in os.walk(startpath):
+        dirs[:] = [d for d in dirs if d != '__pycache__']  # Ignore __pycache__
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * level
         tree.append(f"{indent}{os.path.basename(root)}/")
         subindent = ' ' * 4 * (level + 1)
         for f in files:
-            tree.append(f"{subindent}{f}")
+            if not f.endswith('.pyc'):  # Optionally ignore .pyc files
+                tree.append(f"{subindent}{f}")
 
-    return '\n'.join(tree)
+    tree_str = '\n'.join(tree)
+    print(tree_str)
+    return tree_str
 
 
 def get_local_db_metrics() -> str:
@@ -71,7 +79,9 @@ def get_local_db_metrics() -> str:
                 'max_fields_in_document': max_fields,
                 'min_fields_in_document': min_fields
             })
+    metrics = json.dumps(metrics, indent=4)
+    print(metrics)
 
     # Convert the metrics dictionary to a JSON string
-    return json.dumps(metrics, indent=4)
+    return metrics
 

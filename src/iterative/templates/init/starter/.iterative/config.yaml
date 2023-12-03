@@ -6,7 +6,7 @@ reload_dirs:
   - "backend"
 reload: true
 persist_cache_as_db: false
-verbose: true
+
 default_ai_model: "gpt-3.5-turbo"
 fastapi_port: 5279
 fastapi_host: "0.0.0.0"

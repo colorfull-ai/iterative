@@ -1,5 +1,6 @@
 # src/iterative/cli.py
 
+import sys
 from iterative.server_management import run_web_server
 import typer
 import os
@@ -31,3 +32,4 @@ def start_server(
     Starts the utility server on the specified port.
     """
     run_web_server(port)
+

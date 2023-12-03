@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from iterative.web import iterative_user_web_app as web_app
 from iterative.cli import iterative_cli_app as cli_app
 
@@ -7,9 +9,9 @@ from iterative.web_app_integration import integrate_actions_into_web_app
 from iterative.server_management import run_web_server
 from iterative.config import Config, set_config, get_config
 from iterative.cache import cache
-from iterative.actions.ai_actions import AssistantManager, ConversationManager, ask_assistant, get_assistant_info
+from iterative.actions.assistant_actions import AssistantManager, ConversationManager, ask_assistant, get_assistant_info
 from iterative.models.iterative import IterativeModel
-
+from iterative.action_processing import get_all_actions
 
 def prep_app():
     config = Config(user_config_path="config.yaml")
@@ -24,10 +26,16 @@ def start_app():
     prep_app()
     cli_app()
 
+
 def main():
     prep_app()
-    cli_app()
+    if len(sys.argv) == 1:
+        # No arguments provided, show help by running the script with '--help'
+        subprocess.run(['python', __file__, '--help'])
+    else:
+        cli_app()
 
+    
 
 # Export the public API
 __all__ = [
@@ -48,5 +56,9 @@ __all__ = [
     "AssistantManager",
     "ConversationManager",
     "ask_assistant",
-    "get_assistant_info"
+    "get_assistant_info",
+    "get_all_actions"
 ]
+
+if __name__ == "__main__":
+    main()

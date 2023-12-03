@@ -4,6 +4,9 @@ from iterative.cli import find_iterative_root
 from iterative.config import get_config
 from iterative.models.action import Action
 from iterative.utils import load_module_from_path
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 def get_project_actions():
     iterative_root = find_iterative_root(os.getcwd())
@@ -16,8 +19,8 @@ def get_project_actions():
         return actions
 
     if iterative_root:
-        print(f"Iterative Project Found at {iterative_root}.")
-        print(f"Searching for actions in {user_actions_path}...")
+        logger.debug(f"Iterative Project Found at {iterative_root}.")
+        logger.debug(f"Searching for actions in {user_actions_path}...")
 
         iterative_actions_directory = os.path.join(iterative_root, user_actions_path)
         actions.extend(process_python_action_files(iterative_actions_directory, "User Script"))
@@ -27,7 +30,7 @@ def get_project_actions():
 def process_python_action_files(directory, script_source):
     actions = []
     if not os.path.exists(directory):
-        print(f"'actions' directory not found in {directory}")
+        logger.debug(f"'actions' directory not found in {directory}")
         return actions
 
     for root, dirs, files in os.walk(directory):
@@ -47,7 +50,7 @@ def process_python_action_files(directory, script_source):
 def get_package_default_actions():
     default_actions_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "actions")
     
-    print(f"Processing default actions in {default_actions_directory}")
+    logger.debug(f"Processing default actions in {default_actions_directory}")
     return process_python_action_files(default_actions_directory, "Package Default")
 
 def get_all_actions():

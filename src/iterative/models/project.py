@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from iterative import IterativeModel
-from iterative.models.iterative import IterativeModel
+from iterative.models.config import IterativeAppConfig
 from pydantic import BaseModel
 import yaml
 
@@ -21,27 +20,6 @@ class Configuration(BaseModel):
     config_type: str   # e.g., 'docker', 'webpack', 'database'
     settings: dict     # Key-value pairs for configuration settings
 
-class IterativeAppConfig(BaseModel):
-    actions_search_path: str
-    model_generation_path: str
-    reload_dirs: list[str]
-    reload: bool
-    persist_cache_as_db: bool
-    logging: dict
-    assistant_ids: dict
-    default_ai_model: str
-    fastapi_port: int
-    fastapi_host: str
-    do_not_discover: bool
-    assistant_id: str
-    assistant_conversation_thread_id: str
-    discover_actions: bool
-
-    @staticmethod
-    def load_from_file(config_path):
-        with open(config_path, 'r') as file:
-            config_data = yaml.safe_load(file)
-        return IterativeAppConfig(**config_data)
 
 
 class Project(BaseModel):

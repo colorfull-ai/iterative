@@ -1,4 +1,4 @@
-from iterative.actions.ai_actions import create_function_tool_from_callable, create_function_tool_from_endpoint, give_assistant_tools, parse_fastapi_app, parse_typer_app
+from iterative.actions.assistant_actions import create_function_tool_from_callable, create_function_tool_from_endpoint, give_assistant_tools, parse_fastapi_app, parse_typer_app
 import pytest
 from typer import Typer
 from fastapi import FastAPI, APIRouter
