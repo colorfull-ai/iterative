@@ -22,11 +22,10 @@ class IterativeAppConfig(IterativeModel):
     tests_path: Optional[str] = "tests"
     reload_dirs: Optional[list[str]] = ["."]
     reload: Optional[bool] = True
-    persist_cache_as_db: Optional[bool]
-    default_ai_model: Optional[str]
-    fastapi_port: Optional[int]
-    fastapi_host: Optional[str]
-    do_not_discover: Optional[bool]
-    assistant_id: Optional[str]
-    assistant_conversation_thread_id: Optional[str]
-    logging_level: Optional[LoggingLevel] = LoggingLevel.INFO
+    persist_cache_as_db: Optional[bool] = False
+    default_ai_model: Optional[str] = "gpt-3.5-turbo"
+    fastapi_port: Optional[int] = "8000"
+    fastapi_host: Optional[str] = "0.0.0.0"
+    assistant_id: Optional[str] = ""
+    assistant_conversation_thread_id: Optional[str] = " "
+    logging_level: Optional[str] = LoggingLevel.INFO.value

@@ -9,21 +9,9 @@ fastapi_host: "0.0.0.0"
 assistant_id: "asst_puhjAkOSsC6qxJyQ7Xw9oKoq"
 assistant_conversation_thread_id: ""
 
-reload: true
-
-
-persist_cache_as_db: true
-do_not_discover: false
-
-
 actions_search_path: "actions"  
 model_generation_path: "models"
 api_generation_path: "api"
 tests_path: "tests"
-tests_path: "service"
-logging_level: "DEBUG"
-reload: true
-persist_cache_as_db: false
+# logging_level: "DEBUG"
 default_ai_model: "gpt-3.5-turbo"
-do_not_discover: false
-

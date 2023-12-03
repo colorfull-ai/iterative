@@ -18,7 +18,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 def prep_app():
-    config = Config(user_config_path="config.yaml")
+    config = Config()
     set_config(config)
     cache.load_cache()
 
