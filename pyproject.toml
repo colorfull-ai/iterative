@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iterative"
-version = "0.0.8"
+version = "0.1.0"
 description = "The package to build iterative codebases with AI at the core."
 authors = ["Benjamin Garrard <ben@colorfull.ai>"]
 packages = [{ from = "src", include = "iterative" }]

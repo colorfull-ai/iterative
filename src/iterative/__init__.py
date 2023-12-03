@@ -60,7 +60,6 @@ __all__ = [
     "cli_app",
     "start_util_server",
     "start_app",
-    "discover_actions",
     "run_web_server",
     "Config",
     "set_config",
