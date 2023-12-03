@@ -2,6 +2,8 @@ actions_search_path: "actions"
 model_generation_path: "models"
 api_generation_path: "api"
 tests_path: "tests"
+tests_path: "service"
+logging_level: "DEBUG"
 reload_dirs:
   - "backend"
 reload: true
@@ -14,17 +16,6 @@ do_not_discover: false
 assistant_id: ""
 assistant_conversation_thread_id: ""
 discover_actions: true  # Enable discovery of actions by the AI
-
-
-discover_actions: true          # If true, AI/CLI/web app will discover actions
-
-# Example action settings
-action_discovery: 
-  cli: true                     # Enable discovery of actions by CLI
-  web_app: true                 # Enable discovery of actions by web app
-  ai: true                      # Enable discovery of actions by AI
-
-
 actions_cap: 128          # Set the cap for actions
 actions_count: 0          # Updated dynamically to reflect the current count
 warn_threshold: 100       # When to start warning about nearing the cap

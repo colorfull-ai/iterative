@@ -3,6 +3,10 @@ from iterative.models.config import IterativeAppConfig
 from omegaconf import OmegaConf
 from nosql_yorm.config import Config as NosqlYormConfig, set_config as set_nosql_yorm_config
 from pydantic import ValidationError
+from logging import getLogger
+
+logger = getLogger(__name__)
+
 
 class Config:
     def __init__(self, user_config_path=None, merge_config=True):
@@ -48,9 +52,8 @@ class Config:
         current_dir = os.getcwd()
         while True:
             possible_config_path = os.path.join(current_dir, ".iterative", 'config.yaml')
-            print(f"Checking for config at {possible_config_path}")
             if os.path.exists(possible_config_path):
-                print(f"Found config at {possible_config_path}")
+                logger.debug(f"Found iterative project")
                 return possible_config_path
             new_dir = os.path.dirname(current_dir)
             if new_dir == current_dir:

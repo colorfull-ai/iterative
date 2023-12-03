@@ -3,8 +3,11 @@
 import json
 import os
 from typing import Dict
-from fastapi.responses import JSONResponse
 from iterative.cache import cache
+from logging import getLogger as _getLogger
+
+logger = _getLogger(__name__)
+
 
 def get_openapi_schema() -> Dict:
     """
@@ -15,7 +18,7 @@ def get_openapi_schema() -> Dict:
     """
     from iterative import web_app
 
-    print(web_app.openapi())
+    logger.debug(web_app.openapi())
 
     return web_app.openapi()
 
@@ -43,7 +46,8 @@ def generate_directory_tree(startpath: str = '.') -> str:
                 tree.append(f"{subindent}{f}")
 
     tree_str = '\n'.join(tree)
-    print(tree_str)
+    logger.debug(tree_str)
+
     return tree_str
 
 
@@ -80,7 +84,8 @@ def get_local_db_metrics() -> str:
                 'min_fields_in_document': min_fields
             })
     metrics = json.dumps(metrics, indent=4)
-    print(metrics)
+
+    logger.debug(metrics)
 
     # Convert the metrics dictionary to a JSON string
     return metrics

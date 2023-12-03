@@ -1,9 +1,10 @@
 import os
 import inspect
-from iterative.cli import find_iterative_root
+from fastapi import FastAPI
+from iterative.api_processing import get_api_routers
 from iterative.config import get_config
 from iterative.models.action import Action
-from iterative.utils import load_module_from_path
+from iterative.utils import load_module_from_path, find_iterative_root
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -53,14 +54,60 @@ def get_package_default_actions():
     logger.debug(f"Processing default actions in {default_actions_directory}")
     return process_python_action_files(default_actions_directory, "Package Default")
 
-def get_all_actions():
-    project_actions = get_project_actions()
-    package_default_actions = get_package_default_actions()
+def get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=True):
+    """
+    Get all actions, with options to include or exclude project actions and package default actions.
+
+    Args:
+    include_project_actions (bool): Flag to include project actions. Defaults to True.
+    include_package_default_actions (bool): Flag to include package default actions. Defaults to True.
+
+    Returns:
+    Dict[str, Action]: Dictionary of actions keyed by action name.
+    """
+    actions = []
+
+    if include_project_actions:
+        actions.extend(get_project_actions())
+
+    if include_package_default_actions:
+        actions.extend(get_package_default_actions())
+
+    if include_api_actions:
+        actions.extend(get_api_actions())
 
     all_actions_dict = {}
-    for action in project_actions + package_default_actions:
+    for action in actions:
         if action.name in all_actions_dict:
             raise ValueError(f"Duplicate action found: {action.name}")
         all_actions_dict[action.name] = action
 
     return all_actions_dict
+
+
+def get_api_actions():
+    """
+    This searches the api folder in the project for FastAPI routers and turns the routes into actions.
+    """
+    actions = []
+    for router in get_api_routers():
+        for route in router.routes:
+            # Example of creating an Action from a route
+            # You may need to adjust this according to your route structure and requirements
+            action_name = route.name or route.path.replace('/', '_')
+            action_function = route.endpoint
+            action_file = inspect.getfile(route.endpoint)  # File where the function is defined
+            action_script_source = "API"  # This is a placeholder
+
+            action = Action(
+                name=action_name,
+                function=action_function,
+                file=action_file,
+                script_source=action_script_source
+            )
+            actions.append(action)
+
+            # Optional print for debugging
+            print(f"Created action for route {route.path}")
+
+    return actions

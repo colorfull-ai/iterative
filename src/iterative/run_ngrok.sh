@@ -46,7 +46,7 @@ C_RST=$(tput sgr0)
 CURRENT_DIR=$(pwd)
 
 # Construct the path to config.yaml (assuming it's in a subdirectory of the current working directory)
-CONFIG_FILE="${CURRENT_DIR}/config.yaml"  # Update 'subdirectory' to the actual subdirectory name
+CONFIG_FILE="${CURRENT_DIR}/.iterative/config.yaml"
 
 # Read ngrok_domain and fastapi_port from config.yaml
 NGROK_DOMAIN=$(awk -F": " '/ngrok_domain/{print $2}' $CONFIG_FILE)

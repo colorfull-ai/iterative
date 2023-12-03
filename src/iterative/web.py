@@ -7,14 +7,24 @@ from iterative.config import get_config
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from iterative.web_app_integration import integrate_actions_into_web_app
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 iterative_user_web_app = FastAPI()
 
 
 @iterative_user_web_app.on_event("startup")
 def startup_event():
-    actions = get_all_actions()
-    integrate_actions_into_web_app(actions, iterative_user_web_app)
+    from iterative.api_processing import get_api_routers
+
+    actions = get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=False)
+    integrate_actions_into_web_app(actions.values(), iterative_user_web_app)
+    # Add routers to the web app
+    logger.debug("Adding API routers to web app...")
+    routers = get_api_routers()
+    for router in routers:
+        iterative_user_web_app.include_router(router)
 
 
 @iterative_user_web_app.get("/")

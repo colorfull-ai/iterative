@@ -19,7 +19,6 @@ def _generate_crud_endpoints(class_name):
     return textwrap.dedent(f"""
     from typing import List, Optional
     from fastapi import APIRouter, HTTPException, Query
-    from firebase_admin import firestore
     from models.{class_name} import {class_name}
 
     router = APIRouter()
@@ -89,7 +88,7 @@ def process_script(script_path: str, output_dir: str):
 
     for class_name in finder.classes:
         endpoints_script = _generate_crud_endpoints(class_name)
-        file_path = os.path.join(output_dir, f"{humps.decamelize(class_name).lower()}_endpoints.py")
+        file_path = os.path.join(output_dir, f"{humps.decamelize(class_name).lower()}_api.py")
         with open(file_path, "w") as file:
             file.write(endpoints_script)
         print(f"CRUD Endpoints for {class_name} generated at: {file_path}")

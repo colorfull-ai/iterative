@@ -29,7 +29,7 @@ def run_ngrok_subprocess():
 
 def run_web_server(port: int):
     host = "0.0.0.0"
-    app_module = "iterative.web:web_app"
+    app_module = "iterative.web:iterative_user_web_app"
 
     # Set up ngrok (assuming you have this function implemented)
     script_directory = os.path.dirname(os.path.abspath(__file__))
