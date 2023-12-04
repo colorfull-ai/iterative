@@ -39,10 +39,14 @@ def run_web_server(port: int):
     uvicorn_process = start_uvicorn(host, port, app_module)
 
     def restart_uvicorn():
+        from iterative import prep_app
+
         nonlocal uvicorn_process
         print("Restarting Detected Changes restarting server... ")
         uvicorn_process.kill()
         uvicorn_process.wait()
+
+        prep_app()
         uvicorn_process = start_uvicorn(host, port, app_module)
 
     # Watchdog configuration

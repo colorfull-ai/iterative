@@ -13,6 +13,7 @@ from iterative.cache import cache
 from iterative.actions.assistant_actions import AssistantManager, ConversationManager, ask_assistant, get_assistant_info
 from iterative.models.iterative import IterativeModel
 from iterative.action_processing import get_all_actions
+from iterative.actions.assistant_actions import update_assistant_tools_with_actions
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -32,6 +33,7 @@ def prep_app():
     for router in routers:
         web_app.include_router(router)
 
+    update_assistant_tools_with_actions()
 
 def set_logging_level(level):
     import logging
@@ -58,6 +60,7 @@ def main():
 __all__ = [
     "web_app",
     "cli_app",
+    "prep_app",
     "start_util_server",
     "start_app",
     "run_web_server",

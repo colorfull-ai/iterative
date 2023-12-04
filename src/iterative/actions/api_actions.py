@@ -2,6 +2,9 @@ import ast
 import os
 import textwrap
 import humps
+from logging import getLogger as _getLogger
+
+logger = _getLogger(__name__)
 
 class ClassFinder(ast.NodeVisitor):
     def __init__(self):
@@ -71,11 +74,9 @@ def _generate_crud_endpoints(class_name):
     """)
 
 
-def process_script(script_path: str, output_dir: str):
+def generate_api_endpoints(script_path: str, output_dir: str):
     """
-    Process a script to find classes inheriting from BaseFirebaseModel and generate CRUD endpoints.
-
-
+    Process a python script to find classes inheriting from BaseFirebaseModel or IterativeModel and generate CRUD endpoints.
     """
     with open(script_path, "r") as file:
         source = file.read()
@@ -91,4 +92,4 @@ def process_script(script_path: str, output_dir: str):
         file_path = os.path.join(output_dir, f"{humps.decamelize(class_name).lower()}_api.py")
         with open(file_path, "w") as file:
             file.write(endpoints_script)
-        print(f"CRUD Endpoints for {class_name} generated at: {file_path}")
+        logger.info(f"CRUD api Endpoints for {class_name} generated at: {file_path}")

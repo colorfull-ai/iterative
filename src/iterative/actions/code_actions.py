@@ -1,4 +1,7 @@
 import os
+import shutil
+from typing import Optional
+
 
 def create_or_overwrite_script(script_name: str, script_content: str, actions_folder: str = 'actions'):
     """
@@ -45,3 +48,25 @@ def read_script_content(script_name: str, actions_folder: str = 'actions') -> st
         return f"Error reading script file: {e}"
 
 
+def move_folder_within_app(source: str, destination: str) -> Optional[str]:
+    """
+    Moves a folder within the current Iterative app.
+
+    Args:
+        source (str): The path of the folder to move. This must be a path within the current Iterative app.
+        destination (str): The path to move the folder to. This must be a path within the current Iterative app.
+
+    Returns:
+        Optional[str]: An error message if the move operation failed, or None if it succeeded.
+    """
+    # Check if source and destination are within an Iterative app
+    if not (os.path.exists(os.path.join(source, '.iterative')) and os.path.exists(os.path.join(destination, '.iterative'))):
+        return "Source or destination is not within an Iterative app."
+
+    # Try to move the folder
+    try:
+        shutil.move(source, destination)
+    except Exception as e:
+        return f"Error moving folder: {e}"
+
+    return None

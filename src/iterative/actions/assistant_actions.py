@@ -5,9 +5,9 @@ from openai import OpenAI
 from iterative import get_config as _get_config
 from iterative import get_all_actions as _get_all_actions
 from tqdm import tqdm
-from logging import getLogger
+from logging import getLogger as _getLogger
 
-logger = getLogger(__name__)
+logger = _getLogger(__name__)
 
 
 class AssistantManager:
