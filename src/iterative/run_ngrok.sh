@@ -45,6 +45,8 @@ C_RST=$(tput sgr0)
 # Determine the current working directory
 CURRENT_DIR=$(pwd)
 
+echo "Current directory: $CURRENT_DIR"
+
 # Construct the path to config.yaml (assuming it's in a subdirectory of the current working directory)
 CONFIG_FILE="${CURRENT_DIR}/.iterative/config.yaml"
 

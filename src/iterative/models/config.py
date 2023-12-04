@@ -29,3 +29,4 @@ class IterativeAppConfig(IterativeModel):
     assistant_id: Optional[str] = ""
     assistant_conversation_thread_id: Optional[str] = " "
     logging_level: Optional[str] = LoggingLevel.INFO.value
+    run_ngrok: Optional[bool] = False
