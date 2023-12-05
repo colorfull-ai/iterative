@@ -1,72 +1,48 @@
 import os
-import shutil
-from typing import Optional
+from typing import List
 
-
-def create_or_overwrite_script(script_name: str, script_content: str, actions_folder: str = 'actions'):
+def get_latest_updated_files(dir_path: str, num_files: int = 5) -> List[str]:
     """
-    Creates or overwrites a Python script in the specified actions folder within the user's working directory.
-
-    """
-    # Ensure the script name ends with '.py'
-    if not script_name.endswith('.py'):
-        script_name += '.py'
-
-    # Get the full path for the actions folder and ensure it exists
-    actions_path = os.path.join(os.getcwd(), actions_folder)
-    os.makedirs(actions_path, exist_ok=True)
-
-    # Full path for the script file
-    script_file_path = os.path.join(actions_path, script_name)
-
-    # Write the content to the script file, overwriting any existing content
-    with open(script_file_path, 'w') as file:
-        file.write(script_content)
-
-    print(f"Script '{script_name}' has been created/overwritten at '{script_file_path}'")
-
-
-def read_script_content(script_name: str, actions_folder: str = 'actions') -> str:
-    """
-    Reads the content of a specified script file from the actions folder.
-
-    Returns:
-        str: The content of the script file as a string.
-    """
-    # Construct the full file path
-    script_file_path = os.path.join(os.getcwd(), actions_folder, script_name)
-
-    # Check if the file exists
-    if not os.path.exists(script_file_path):
-        return f"Script file '{script_file_path}' does not exist."
-
-    # Read and return the file content
-    try:
-        with open(script_file_path, 'r') as file:
-            return file.read()
-    except Exception as e:
-        return f"Error reading script file: {e}"
-
-
-def move_folder_within_app(source: str, destination: str) -> Optional[str]:
-    """
-    Moves a folder within the current Iterative app.
+    Get the latest updated files in a directory.
 
     Args:
-        source (str): The path of the folder to move. This must be a path within the current Iterative app.
-        destination (str): The path to move the folder to. This must be a path within the current Iterative app.
+        dir_path (str): The directory path.
+        num_files (int, optional): The number of files to return. Defaults to 5.
 
     Returns:
-        Optional[str]: An error message if the move operation failed, or None if it succeeded.
+        List[str]: The paths of the latest updated files.
     """
-    # Check if source and destination are within an Iterative app
-    if not (os.path.exists(os.path.join(source, '.iterative')) and os.path.exists(os.path.join(destination, '.iterative'))):
-        return "Source or destination is not within an Iterative app."
+    files = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+    files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+    return files[:num_files]
 
-    # Try to move the folder
-    try:
-        shutil.move(source, destination)
-    except Exception as e:
-        return f"Error moving folder: {e}"
+def read_files(files: List[str]) -> str:
+    """
+    Read the contents of multiple files and concatenate them into a single string.
 
-    return None
+    Args:
+        files (List[str]): The file paths.
+
+    Returns:
+        str: The concatenated file contents.
+    """
+    contents = ""
+    for file in files:
+        with open(file, 'r') as f:
+            contents += f.read()
+    return contents
+
+def get_code_dir_context_similarity(dir_path: str) -> str:
+    """
+    Given a dir path, reads the latest updated files and a few medium sized files as a big concatenated string of code
+    and context about the code.
+
+    Args:
+        dir_path (str): The directory path.
+
+    Returns:
+        str: The concatenated file contents.
+    """
+    latest_files = get_latest_updated_files(dir_path)
+    contents = read_files(latest_files)
+    return contents

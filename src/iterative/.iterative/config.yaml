@@ -3,6 +3,7 @@ model_generation_path: "models"
 api_generation_path: "api"
 tests_path: "tests"
 tests_path: "service"
+apps_path: "apps" # For extending the service, growing the app with AI managed apps decoupled
 logging_level: "DEBUG"
 reload: true
 persist_cache_as_db: false

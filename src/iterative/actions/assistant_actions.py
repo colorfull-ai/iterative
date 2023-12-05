@@ -1,11 +1,14 @@
 import json
 import time
 from typing import Dict, List
+from iterative.api_processing import get_api_routers as _get_api_routers
+from iterative.web_app_integration import integrate_actions_into_web_app as _integrate_actions_into_web_app
 from openai import OpenAI
 from iterative import get_config as _get_config
 from iterative import get_all_actions as _get_all_actions
 from tqdm import tqdm
 from logging import getLogger as _getLogger
+from termcolor import colored as _colored
 
 logger = _getLogger(__name__)
 
@@ -148,7 +151,9 @@ def get_assistant_info():
     assistant_id = _get_config().get("assistant_id")
     assistant_manager = AssistantManager(client)
     assistant_info = assistant_manager.get_assistant_info(assistant_id)
+    assistant = assistant_manager.get_assistant(assistant_id)
 
+    print(_colored(f"Assistant Information: \n{json.dumps(json.loads(assistant_info), indent=2)}", 'yellow'))
     logger.debug("Assistant Information:", assistant_info)
 
     return assistant_info
@@ -177,8 +182,18 @@ def update_assistant_tools_with_actions():
     return assistant_manager.update_assistant(assistant_id, tools=tools)
 
 def get_actions():
-    from iterative import web_app
-    openapi_schema = web_app.openapi()
+    from fastapi import FastAPI
+    dummy_app = FastAPI()
+    actions = _get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=False)
+    _integrate_actions_into_web_app(actions.values(), dummy_app)
+
+    # Add routers to the web app
+    logger.debug("Adding API routers to web app...")
+    routers = _get_api_routers()
+    for router in routers:
+        dummy_app.include_router(router)
+
+    openapi_schema = dummy_app.openapi()
 
     functions = []
     paths = openapi_schema.get('paths', {})
@@ -227,3 +242,39 @@ def get_actions():
 #     """
 #     # Assuming your Streamlit app is in 'streamlit_app.py'
 #     subprocess.run(["streamlit", "run", "streamlit_app.py"])
+
+
+def interactive_session(assistant_id: str = None):
+    """
+    Starts an interactive session for back and forth conversation between the user and the assistant.
+
+    Args:
+        assistant_id (str, optional): The ID of the assistant. Defaults to None.
+
+    Returns:
+        None
+    """
+    client = OpenAI()
+    if not assistant_id:
+        assistant_id = _get_config().get("assistant_id")
+    conversation_manager = ConversationManager(client, assistant_id)
+
+    if not conversation_manager.current_thread:
+        conversation_manager.create_conversation()
+
+    print(_colored("Welcome to the interactive session. Type your message and press enter to get a response. Type 'quit' to end the session.", 'yellow'))
+    
+    while True:
+        message = input(_colored("You: ", 'green'))
+        if not message.strip():
+            print(_colored("Message cannot be empty. Please enter a message.", 'red'))
+            continue
+        if message.lower() == "quit":
+            print(_colored("Thank you for using the interactive session. Goodbye!", 'yellow'))
+            break
+        try:
+            conversation_manager.add_message(message)
+            conversation_messages = conversation_manager.process_conversation()
+            print(_colored("Assistant: ", 'blue'), conversation_messages.data[0].content[0].text.value)
+        except Exception as e:
+            print(_colored(f"An error occurred: {e}", 'red'))

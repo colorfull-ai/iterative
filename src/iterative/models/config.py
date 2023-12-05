@@ -17,6 +17,7 @@ class IterativeAppConfig(IterativeModel):
     model_generation_path: Optional[str] = "models"
     services_generation_path: Optional[str] = "services"
     api_generation_path: Optional[str] = "api"
+    apps_path: Optional[str] = "apps"
     data_path: Optional[str] = "data"
     logs_path: Optional[str] = "logs"
     tests_path: Optional[str] = "tests"
