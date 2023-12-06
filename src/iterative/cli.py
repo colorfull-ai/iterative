@@ -9,11 +9,9 @@ iterative_cli_app = typer.Typer()
 
 
 @iterative_cli_app.command()
-def start_server(
-    port: int = typer.Option(5279, help="Port number for the utility server"),
-):
+def start_server():
     """
     Starts the utility server on the specified port.
     """
-    run_web_server(port)
+    run_web_server()
 

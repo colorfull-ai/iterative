@@ -27,9 +27,17 @@ def run_ngrok_subprocess():
     bash_script_path = os.path.join(script_directory, "run_ngrok.sh")
     run_ngrok_setup_script(bash_script_path)
 
-def run_web_server(port: int):
-    host = "0.0.0.0"
+def run_web_server():
+    """
+    Run the fastapi web server over uvicorn.  Settings are taken from .iterative/config.yaml
+    """
+    from iterative import prep_app
+
+    host = get_config().get("fastapi_host", "0.0.0.0")
+    port = get_config().get("fastapi_port", 5279)
     app_module = "iterative.web:iterative_user_web_app"
+
+    prep_app()
 
     # Set up ngrok (assuming you have this function implemented)
     script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -39,7 +47,6 @@ def run_web_server(port: int):
     uvicorn_process = start_uvicorn(host, port, app_module)
 
     def restart_uvicorn():
-        from iterative import prep_app
 
         nonlocal uvicorn_process
         print("Restarting Detected Changes restarting server... ")

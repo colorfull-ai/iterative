@@ -82,12 +82,10 @@ def generate_endpoints_for_model(model_name: str):
     Generate FastAPI CRUD endpoints for a given model and save them in the 'endpoints' directory.
 
     """
-    # Fetch paths from the global configuration if not provided
-    if not models_path or not endpoints_path:
-        model_gen_path = os.path.join(os.getcwd(), _get_config().config.get('model_generation_path'))
-        api_gen_path = os.path.join(os.getcwd(), _get_config().config.get('api_generation_path'))
-        models_path = models_path or os.path.join(model_gen_path)
-        endpoints_path = endpoints_path or os.path.join(api_gen_path)
+    model_name_pascal = humps.pascalize(model_name)
+    models_path = os.path.join(os.getcwd(), _get_config().config.get('model_generation_path'))
+    api_path = os.path.join(os.getcwd(), _get_config().config.get('api_generation_path'))
+    endpoints_path = os.path.join(api_path, f'{humps.depascalize(model_name)}_api.py')
 
     # Ensure the 'models' directory exists
     if not os.path.exists(models_path):
@@ -97,7 +95,7 @@ def generate_endpoints_for_model(model_name: str):
     # Ensure the 'endpoints' directory exists
     os.makedirs(endpoints_path, exist_ok=True)
 
-    model_file_name = f"{model_name}.py"
+    model_file_name = f"{model_name_pascal}.py"
     model_file_path = os.path.join(models_path, model_file_name)
 
     # Ensure the model file exists

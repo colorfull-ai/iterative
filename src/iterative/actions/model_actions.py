@@ -3,8 +3,6 @@ import re
 from textwrap import dedent as _dedent
 from typing import  Optional
 from iterative.config import get_config as _get_config
-from iterative.actions.api_actions import _generate_crud_endpoints
-import humps
 
 
 def generate_model(entity_name: str, model_generation_path: Optional[str] = None):

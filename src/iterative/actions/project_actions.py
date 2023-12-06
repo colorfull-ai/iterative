@@ -1,10 +1,16 @@
 import json
 import os
+from pathlib import Path
 import shutil
+import subprocess
 from iterative import get_config as _get_config
 from iterative.models.config import IterativeAppConfig
 import typer
 from typing import Optional
+from omegaconf import OmegaConf
+from logging import getLogger as _get_logger
+
+logger = _get_logger(__name__)
 
 def create_folders(path: str):
     """
@@ -118,9 +124,6 @@ def init(template_name: str = "starter"):
         raise typer.Exit(code=1)
     
 
-
-
-
 def create_or_overwrite_script(script_name: str, script_content: str, actions_folder: str = 'actions'):
     """
     Creates or overwrites a Python script in the specified actions folder within the user's working directory.
@@ -188,3 +191,105 @@ def move_folder_within_app(source: str, destination: str) -> Optional[str]:
         return f"Error moving folder: {e}"
 
     return None
+
+
+def get_project_config():
+    try:
+        config = _get_config()
+        # Convert the configuration to a dictionary or another suitable format for display or use
+        config_dict = OmegaConf.to_object(config.config, resolve=True)
+        return config_dict
+    except Exception as e:
+        logger.error(f"Error getting project configuration: {e}")
+        return None
+
+
+def initialize_project(project_name):
+    project_dir = os.path.join(os.getcwd(), project_name)
+    iterative_dir = os.path.join(project_dir, '.iterative')
+    os.makedirs(iterative_dir, exist_ok=True)
+
+
+def update_project_config(key, value):
+    try:
+        config = _get_config()
+        # Assuming the configuration is a nested dictionary, update the relevant key
+        OmegaConf.update(config.config, key, value, merge=True)
+        # Save the updated configuration back to the file
+        with open(config.find_iterative_config(), 'w') as f:
+            OmegaConf.save(config=config.config, f=f)
+        return True
+    except Exception as e:
+        logger.error(f"Error updating project configuration: {e}")
+        return False
+    
+def update_project_config_value(key: str, value):
+    config = _get_config()
+    OmegaConf.update(config.config, key, value, merge=True)
+    save_config(config)
+    return f"Updated {key} to {value}"
+
+def save_config():
+    config_path = os.getcwd() + "/.iterative/config.yaml"
+    if config_path:
+        with open(config_path, 'w') as f:
+            OmegaConf.save(config=_get_config().config, f=f)
+        logger.info(f"Configuration saved to {config_path}")
+    else:
+        raise FileNotFoundError("Configuration file not found.")
+
+
+def _create_pyproject_toml(project_name, package_name, description="A brief description of your project"):
+    """
+    Creates a pyproject.toml file with the given project name and package name.
+    """
+    content = f"""
+[tool.poetry]
+name = "{project_name}"
+version = "0.1.0"
+description = "{description}"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+packages = [{{ include = "{package_name}" }}]
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+"""
+    with open("pyproject.toml", "w") as file:
+        file.write(content)
+
+def _install_with_poetry():
+    """
+    Runs Poetry install command.
+    """
+    try:
+        subprocess.run(["poetry", "install"], check=True)
+        print("Project installed successfully using Poetry.")
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while installing the project: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+
+def install_as_package():
+    """
+    Creates a pyproject.toml file and installs the current directory as a package using Poetry.
+    """
+    project_dir = Path(os.getcwd())
+    project_name = project_dir.name
+    package_name = project_name.replace("-", "_")  # Replace hyphens with underscores for Python package naming
+
+    # Ensure the package directory exists
+    (project_dir / package_name).mkdir(exist_ok=True)
+
+    # Create an __init__.py file in the package directory if it doesn't exist
+    init_file = project_dir / package_name / "__init__.py"
+    init_file.touch()
+
+    # Create pyproject.toml
+    _create_pyproject_toml(project_name, package_name)
+
+    # Install the project using Poetry
+    _install_with_poetry()

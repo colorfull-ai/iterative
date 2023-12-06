@@ -9,6 +9,7 @@ from iterative import get_all_actions as _get_all_actions
 from tqdm import tqdm
 from logging import getLogger as _getLogger
 from termcolor import colored as _colored
+import json
 
 logger = _getLogger(__name__)
 
@@ -50,6 +51,11 @@ class AssistantManager:
         try:
             if not asst_id:
                 asst_id = _get_config().get("assistant_id")
+            
+            if not asst_id:
+                print("No assistant ID provided.")
+                return 
+            
             assistant = self.client.beta.assistants.update(asst_id, **kwargs)
             return assistant
         except Exception as e:
@@ -278,3 +284,70 @@ def interactive_session(assistant_id: str = None):
             print(_colored("Assistant: ", 'blue'), conversation_messages.data[0].content[0].text.value)
         except Exception as e:
             print(_colored(f"An error occurred: {e}", 'red'))
+
+
+def execute_action_calls(json_commands):
+    """
+    Execute a series of function calls defined by a JSON-formatted string.
+    
+    The JSON string should be a serialized array of command objects. Each command object
+    must contain two keys:
+    
+    'function': A string that specifies the name of the function to call.
+                The function must exist in the global scope and be callable.
+                
+    'args': A dictionary where each key-value pair represents an argument name and its
+            corresponding scalar value (i.e., string, integer, float, boolean, or None) to
+            pass to the function. The function will be called with these arguments.
+            
+    All functions and arguments must be defined such that they are compatible with scalar values
+    only, as complex types are not supported in this interface.
+    
+    Example of a valid JSON string:
+    
+    ```
+    [
+      {
+        "function": "update_project_config_value",
+        "args": {"key": "database_port", "value": 5432}
+      },
+      {
+        "function": "enable_feature",
+        "args": {"feature_name": "logging", "status": true}
+      },
+      // Add more function calls as needed
+    ]
+    ```
+    
+    Args:
+        json_commands (str): A JSON string representing an ordered list of function calls
+                             and their scalar arguments. The commands will be executed in
+                             the order they appear in the string.
+                             
+    Raises:
+        json.JSONDecodeError: If `json_commands` is not a valid JSON string.
+        Exception: For any issues during function execution, including if a function is not
+                   found, or if there is a mismatch between provided arguments and the
+                   function's parameters.
+    """
+    try:
+        # Deserialize the JSON string into a Python object
+        commands = json.loads(json_commands)
+        
+        # Iterate over the list of commands
+        for command in commands:
+            function_name = command['function']
+            args = command['args']
+
+            # Ensure the function exists and is callable
+            function_to_call = globals().get(function_name)
+            if callable(function_to_call):
+                # Execute the function with the provided arguments
+                function_to_call(**args)
+            else:
+                logger.error(f"Function {function_name} not found or is not callable.")
+
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
+    except Exception as e:
+        logger.error(f"Error executing function calls: {e}")

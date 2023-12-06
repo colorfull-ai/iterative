@@ -15,7 +15,7 @@ class LoggingLevel(str, Enum):
 class IterativeAppConfig(IterativeModel):
     actions_search_path: Optional[str] = "actions"
     model_generation_path: Optional[str] = "models"
-    services_generation_path: Optional[str] = "services"
+    service_generation_path: Optional[str] = "service"
     api_generation_path: Optional[str] = "api"
     apps_path: Optional[str] = "apps"
     data_path: Optional[str] = "data"
