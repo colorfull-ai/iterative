@@ -20,6 +20,7 @@ class ClassFinder(ast.NodeVisitor):
 
 def _generate_crud_endpoints(class_name):
     class_name_snake = humps.decamelize(class_name)  # snake_case
+    class_name_snake = humps.depascalize(class_name_snake)  # snake_case
 
     return textwrap.dedent(f"""
     from typing import List, Optional
@@ -104,7 +105,7 @@ def generate_endpoints_for_model(model_name: str):
         return
 
     # Generate CRUD endpoint script
-    endpoints_script = _generate_crud_endpoints(model_name)
+    endpoints_script = _generate_crud_endpoints(model_name_pascal)
     endpoints_file_path = os.path.join(endpoints_path, f"{humps.decamelize(model_name)}_api.py")
 
     # Write the endpoints to the file, overwriting any existing file

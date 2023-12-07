@@ -53,6 +53,9 @@ def custom_openapi():
     openapi_schema["servers"] = [
         {
             "url": os.getenv("HOST"),
+        },
+        {
+            "url": f"http://{get_config().get('fastapi_host')}:{get_config().get('fastapi_port')}",
         }
     ]
 

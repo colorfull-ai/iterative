@@ -13,6 +13,9 @@ class LoggingLevel(str, Enum):
 
 
 class IterativeAppConfig(IterativeModel):
+    """
+    If you want the new config variable to be available in the config object, you need to add it here.
+    """
     actions_search_path: Optional[str] = "actions"
     model_generation_path: Optional[str] = "models"
     service_generation_path: Optional[str] = "service"
@@ -24,6 +27,7 @@ class IterativeAppConfig(IterativeModel):
     reload_dirs: Optional[list[str]] = ["."]
     reload: Optional[bool] = True
     persist_cache_as_db: Optional[bool] = False
+    read_write_to_cache: Optional[bool] = False
     default_ai_model: Optional[str] = "gpt-3.5-turbo"
     fastapi_port: Optional[int] = "8000"
     fastapi_host: Optional[str] = "0.0.0.0"

@@ -11,14 +11,12 @@ logger = getLogger(__name__)
 class Config:
     def __init__(self,  merge_config=True):
         user_config_path = self.find_iterative_config()
-        user_config = default_config = OmegaConf.create(IterativeAppConfig().dict())
-
+        default_config = OmegaConf.create(IterativeAppConfig().dict())
         nosql_yorm_config = NosqlYormConfig()
 
         # Load and validate the user configuration if provided
         if user_config_path and os.path.exists(user_config_path):
             user_config = OmegaConf.merge(nosql_yorm_config.config,  default_config,  OmegaConf.load(user_config_path))
-
 
             if not user_config_path:
                 logger.debug("No user configuration found")
