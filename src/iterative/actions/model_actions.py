@@ -2,6 +2,7 @@ import os
 import re
 from textwrap import dedent as _dedent
 from typing import  Optional
+import humps
 from iterative.config import get_config as _get_config
 
 
@@ -24,9 +25,10 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
         print(f"Error creating directory {model_folder}: {e}")
         return
 
-    # Generate the model class content
-    class_name = entity_name.title().replace('_', '')
-    file_name = f"{class_name}.py"
+    # Generate file name in snake case and class name in pascal case
+    file_name = humps.decamelize(entity_name) + ".py"
+    class_name = humps.pascalize(entity_name)
+
     file_path = os.path.join(model_folder, file_name)
     model_content = _dedent(f"""\
     from iterative import IterativeModel
@@ -51,7 +53,7 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
             init_content = file.read()
 
     # Append import statement
-    init_content += f"from .{class_name} import {class_name}\n"
+    init_content += f"from .{humps.decamelize(entity_name)} import {class_name}\n"
 
     # Update __all__ list
     all_match = re.search(r'__all__\s*=\s*\[([^\]]*)\]', init_content)
@@ -65,6 +67,7 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
         file.write(init_content)
 
     print(f"Model {class_name} created at {file_path}")
+
 
 
 def add_property_to_model(entity_name: str, property_name: str, property_type: str, model_generation_path: Optional[str] = None):

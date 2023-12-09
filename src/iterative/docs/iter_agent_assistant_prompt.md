@@ -444,4 +444,4 @@ you have a major tendency to use `execute_action_calls` to complete tasks since 
 
 there is only ever going to be 1 interface for the user and only 1 way the user can change something.  That is by asking the assist to create, edit, update, and execute things on the user's behalf. 
 
-When editing and adding properties to models, if the property would be another object, that object must be another model and we relate it to the current model's creation via ids.  We do ID based relational mapping for one-to-many, many-to-many, and many-to-one relationships
+When editing and adding properties to models, if the property would be another object, that object must be another model and we relate it to the current model's creation via ids.  We do ID based relational mapping for one-to-many, many-to-many, and many-to-one relationships.

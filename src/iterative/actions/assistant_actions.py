@@ -1,9 +1,12 @@
 import json
 import time
-from typing import Dict, List
 from iterative.api_processing import get_api_routers as _get_api_routers
+from iterative.service.assistant_manager import AssistantManager
+from iterative.service.conversation_manager import ConversationManager
 from iterative.web_app_integration import integrate_actions_into_web_app as _integrate_actions_into_web_app
+from iterative.models.assistant import IterativeAssistant
 from openai import OpenAI
+from typing import Dict, List
 from iterative import get_config as _get_config
 from iterative import get_all_actions as _get_all_actions
 from tqdm import tqdm
@@ -13,144 +16,6 @@ import json
 
 logger = _getLogger(__name__)
 
-
-class AssistantManager:
-    def __init__(self, client):
-        self.client: OpenAI = client
-
-    def list_assistants(self):
-        try:
-            assistants = self.client.beta.assistants.list()
-            return assistants.data
-        except Exception as e:
-            print(f"Error listing assistants: {e}")
-            return None
-
-    def get_assistant(self, asst_id=None):
-        try:
-            if not asst_id:
-                asst_id = _get_config().get("assistant_id")
-
-            assistant = self.client.beta.assistants.retrieve(asst_id)
-            return assistant
-        except Exception as e:
-            print(f"Error getting assistant: {e}")
-            return None
-
-    def get_assistant_info(self, asst_id=None):
-        try:
-            if not asst_id:
-                asst_id = _get_config().get("assistant_id")
-            assistant = self.client.beta.assistants.retrieve(asst_id)
-            return assistant.json()
-        except Exception as e:
-            print(f"Error getting assistant: {e}")
-            return None
-        
-    def update_assistant(self, asst_id=None, **kwargs):
-        try:
-            if not asst_id:
-                asst_id = _get_config().get("assistant_id")
-            
-            if not asst_id:
-                print("No assistant ID provided.")
-                return 
-            
-            assistant = self.client.beta.assistants.update(asst_id, **kwargs)
-            return assistant
-        except Exception as e:
-            print(json.dumps(e, indent=2))
-            # print(f"Error updating assistant: {e}")
-            return None
-
-class ConversationManager:
-    def __init__(self, client, assistant_id):
-        self.client: OpenAI = client
-        self.assistant_id = assistant_id
-        self.current_thread = _get_config().get("assistant_conversation_thread_id")
-        self.current_run = None
-        self.actions = _get_all_actions()
-
-    def create_conversation(self):
-        self.current_thread = self.client.beta.threads.create()
-        return self.current_thread
-
-    def add_message(self, message: str):
-        if not self.current_thread:
-            raise Exception("No active conversation thread.")
-        return self.client.beta.threads.messages.create(
-            thread_id=self.current_thread.id,
-            content=message,
-            role="user"
-        )
-
-    def process_conversation(self):
-        logger.debug("Processing conversation...")
-
-        if not self.current_thread:
-            raise Exception("No active conversation thread.")
-
-        self.current_run = self.client.beta.threads.runs.create(
-            thread_id=self.current_thread.id,
-            assistant_id=self.assistant_id
-        )
-
-        # Continuously check the status of the conversation
-        while True:
-            self.current_run = self.client.beta.threads.runs.retrieve(
-                thread_id=self.current_thread.id,
-                run_id=self.current_run.id
-            )
-
-            if self.current_run.status == "requires_action":
-                self.handle_required_action()
-            elif self.current_run.status in ["cancelled", "cancelling", "completed", "failed", "expired"]:
-                break
-
-            time.sleep(1)  # Avoid too frequent polling
-
-        messages = self.client.beta.threads.messages.list(
-            thread_id=self.current_thread.id
-        )
-        return messages
-
-    def handle_required_action(self):
-        # Assuming the tool call details are in current_run.required_action
-        required_action = self.current_run.required_action
-        outputs = required_action.submit_tool_outputs
-        actual_action_outputs = []
-        for tool_call in outputs.tool_calls:
-            tool_call_id = tool_call.id
-            
-            function_name, args = tool_call.function.name, tool_call.function.arguments
-            # Execute the action
-            action_output = self.execute_action(function_name, **json.loads(args))
-            actual_action_outputs.append({"tool_call_id": tool_call_id, "output": json.dumps(action_output)})
-
-
-        # Submit the tool output back to OpenAI
-        self.submit_tool_outputs(actual_action_outputs)
-
-
-    def execute_action(self, action_name: str, **kwargs):
-        action = self.actions.get(action_name)
-        if not action:
-            raise Exception(f"Action {action_name} not found.")
-        action_result = action.get_function()(**kwargs)
-        return action_result
-
-    def submit_tool_outputs(self, tool_outputs: List[Dict]):
-        logger.debug("Submitting tool outputs...")
-
-        for _ in tqdm(range(300), desc="Submitting...", leave=False):
-            time.sleep(0.03)
-
-        run = self.client.beta.threads.runs.submit_tool_outputs(
-            thread_id=self.current_thread.id,
-            run_id=self.current_run.id,
-            tool_outputs=tool_outputs
-        )
-        return run
 
 def get_assistant_info():
     client = OpenAI()
@@ -185,7 +50,29 @@ def update_assistant_tools_with_actions():
     client = OpenAI()
     assistant_manager = AssistantManager(client)
 
-    return assistant_manager.update_assistant(assistant_id, tools=tools)
+    # Retrieve the current assistant's properties
+    current_assistant = assistant_manager.get_assistant(assistant_id)
+    if current_assistant is None:
+        print("Failed to retrieve current assistant.")
+        return None
+
+    # Update the tools while keeping other properties intact
+    updated_assistant_properties = IterativeAssistant(
+        id=current_assistant.id,
+        created_at=current_assistant.created_at,
+        description=current_assistant.description,
+        file_ids=current_assistant.file_ids,
+        instructions=current_assistant.instructions,
+        metadata=current_assistant.metadata,
+        model=current_assistant.model,
+        name=current_assistant.name,
+        object=current_assistant.object,
+        tools=tools  # Update the tools
+    )
+
+    # Call the updated update_assistant method
+    return assistant_manager.update_assistant(assistant_id, **updated_assistant_properties.dict())
+
 
 def get_actions():
     from fastapi import FastAPI
