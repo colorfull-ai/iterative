@@ -10,7 +10,7 @@ from iterative.web_app_integration import integrate_actions_into_web_app
 from iterative.server_management import run_web_server, run_ngrok_subprocess
 from iterative.config import Config, set_config, get_config
 from iterative.cache import cache
-from iterative.actions.assistant_actions import AssistantManager, ConversationManager, ask_assistant, get_assistant_info
+from iterative.actions.assistant_actions import AssistantManager, ConversationManager, _get_configured_actions, ask_assistant, get_assistant_info
 from iterative.models.iterative import IterativeModel
 from iterative.action_processing import get_all_actions
 from iterative.actions.assistant_actions import update_assistant_tools_with_actions
@@ -23,9 +23,10 @@ def prep_app():
     set_config(config)
     cache.load_cache()
 
-    actions = get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=False)
-    integrate_actions_into_cli_app(actions.values(), cli_app)
-    integrate_actions_into_web_app(actions.values(), web_app)
+    web_actions, cli_actions = _get_configured_actions()
+
+    integrate_actions_into_web_app(web_actions.values(), web_app)
+    integrate_actions_into_cli_app(cli_actions.values(), cli_app)
 
     # Add routers to the web app
     logger.debug("Adding API routers to web app...")

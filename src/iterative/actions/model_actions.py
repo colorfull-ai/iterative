@@ -1,10 +1,9 @@
 import os
-import re
 from textwrap import dedent as _dedent
 from typing import  Optional
 import humps
 from iterative.config import get_config as _get_config
-
+from pydantic2ts import generate_typescript_defs
 
 def generate_model(entity_name: str, model_generation_path: Optional[str] = None):
     """
@@ -44,27 +43,6 @@ def generate_model(entity_name: str, model_generation_path: Optional[str] = None
     # Write the model class to the file
     with open(file_path, 'w') as file:
         file.write(model_content)
-
-    # Update __init__.py to import the new model and add it to __all__
-    init_file = os.path.join(model_folder, '__init__.py')
-    init_content = ""
-    if os.path.exists(init_file):
-        with open(init_file, 'r') as file:
-            init_content = file.read()
-
-    # Append import statement
-    init_content += f"from .{humps.decamelize(entity_name)} import {class_name}\n"
-
-    # Update __all__ list
-    all_match = re.search(r'__all__\s*=\s*\[([^\]]*)\]', init_content)
-    if all_match:
-        all_list = all_match.group(1) + f', "{class_name}"'
-        init_content = re.sub(r'__all__\s*=\s*\[([^\]]*)\]', f'__all__ = [{all_list}]', init_content)
-    else:
-        init_content += f'\n__all__ = ["{class_name}"]\n'
-
-    with open(init_file, 'w') as file:
-        file.write(init_content)
 
     print(f"Model {class_name} created at {file_path}")
 
@@ -132,3 +110,23 @@ def edit_property_in_model(entity_name: str, property_name: str, new_type: str, 
 
     print(f"Property {property_name} edited in model {entity_name} at {file_path}")
 
+
+def generate_ts_definitions_from_pydantic(module_path: str, output_file_path: str):
+    """
+    Generates TypeScript definitions from a Pydantic module and saves them to a file.
+
+    Args:
+        module_path (str): The import path of the Pydantic module (e.g., 'backend.api').
+        output_file_path (str): The path to the output TypeScript file.
+    """
+    try:
+        # Generate TypeScript definitions
+        ts_definitions = generate_typescript_defs(module_path)
+
+        # Save the definitions to the specified output file
+        with open(output_file_path, 'w') as file:
+            file.write(ts_definitions)
+        
+        print(f"TypeScript definitions generated and saved to {output_file_path}")
+    except Exception as e:
+        print(f"An error occurred while generating TypeScript definitions: {e}")

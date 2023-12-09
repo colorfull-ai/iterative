@@ -35,3 +35,11 @@ class IterativeAppConfig(IterativeModel):
     assistant_conversation_thread_id: Optional[str] = " "
     logging_level: Optional[str] = LoggingLevel.INFO.value
     run_ngrok: Optional[bool] = False
+    expose_project_actions: Optional[bool] = True
+    expose_package_default_actions: Optional[bool] = True
+    expose_default_actions_to_ai: Optional[bool] = True
+    expose_project_actions_to_ai: Optional[bool] = True
+    expose_api_actions_to_ai: Optional[bool] = True
+    expose_default_actions_to_cli: Optional[bool] = True
+    expose_project_actions_to_cli: Optional[bool] = True
+    expose_api_actions_to_cli: Optional[bool] = True

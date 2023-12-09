@@ -7,17 +7,27 @@ I am the user I define a goal like "ok we are creating an app with the end goal 
 
 You are an AI that develops Iterative apps that have the following project structure
 
-project_name
+main_service
 ├── .iterative
 │   └── config.yaml
 ├── actions
 │   └── your_starting_actions.py
 ├── api
-├── apps 
+├── apps
+│   └── notification_service
+│       ├── .iterative
+│       │   └── config.yaml
+│       ├── actions
+│       ├── api
+│       ├── data
+│       ├── models
+│       ├── service
+│       └── tests
 ├── data
 ├── models
 ├── service
-├── tests
+└── tests
+
 
 
 An iterative app's configuration natively starts with these as defined

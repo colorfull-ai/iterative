@@ -22,7 +22,6 @@ def get_assistant_info():
     assistant_id = _get_config().get("assistant_id")
     assistant_manager = AssistantManager(client)
     assistant_info = assistant_manager.get_assistant_info(assistant_id)
-    assistant = assistant_manager.get_assistant(assistant_id)
 
     print(_colored(f"Assistant Information: \n{json.dumps(json.loads(assistant_info), indent=2)}", 'yellow'))
     logger.debug("Assistant Information:", assistant_info)
@@ -73,18 +72,46 @@ def update_assistant_tools_with_actions():
     # Call the updated update_assistant method
     return assistant_manager.update_assistant(assistant_id, **updated_assistant_properties.dict())
 
+def _get_configured_actions():
+    config = _get_config()
+
+    ai_actions = _get_all_actions(
+        include_project_actions=config.get("expose_project_actions_to_ai"),
+        include_package_default_actions=config.get("expose_default_actions_to_ai"),
+        include_api_actions=config.get("expose_api_actions_to_ai")
+    )
+
+    cli_actions = _get_all_actions(
+        include_project_actions=config.get("expose_project_actions_to_cli"),
+        include_package_default_actions=config.get("expose_default_actions_to_cli"),
+        # The CLI will never support API actions since the CLI can only handle Scalar arguments
+        include_api_actions=False 
+    )
+
+    return ai_actions, cli_actions
+
 
 def get_actions():
     from fastapi import FastAPI
     dummy_app = FastAPI()
-    actions = _get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=False)
+    exposed_ai_actions, cli_actions = _get_configured_actions()
+
+    # check if cli_actions is in ai_actions and if not add them and integrate with web app, filter first
+    actions = {}
+    for action in cli_actions.values():
+        if action.id not in exposed_ai_actions:
+            exposed_ai_actions[action.id] = action
+            actions[action.id] = action
+        
+    
     _integrate_actions_into_web_app(actions.values(), dummy_app)
 
-    # Add routers to the web app
-    logger.debug("Adding API routers to web app...")
-    routers = _get_api_routers()
-    for router in routers:
-        dummy_app.include_router(router)
+    if _get_config().get("let_ai_use_apis"):
+        # Add routers to the web app
+        logger.debug("Adding API routers to web app...")
+        routers = _get_api_routers()
+        for router in routers:
+            dummy_app.include_router(router)
 
     openapi_schema = dummy_app.openapi()
 

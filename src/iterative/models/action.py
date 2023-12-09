@@ -1,8 +1,12 @@
 import inspect
+import uuid
 from typing import Any, Callable, Dict
 from iterative.models.iterative import IterativeModel
+from pydantic import Field
+
 
 class Action(IterativeModel):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4)
     name: str
     function: Callable
     file: str
