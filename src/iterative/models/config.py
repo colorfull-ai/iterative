@@ -42,4 +42,3 @@ class IterativeAppConfig(IterativeModel):
     expose_api_actions_to_ai: Optional[bool] = True
     expose_default_actions_to_cli: Optional[bool] = True
     expose_project_actions_to_cli: Optional[bool] = True
-    expose_api_actions_to_cli: Optional[bool] = True

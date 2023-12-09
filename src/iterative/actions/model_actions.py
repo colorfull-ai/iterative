@@ -3,7 +3,7 @@ from textwrap import dedent as _dedent
 from typing import  Optional
 import humps
 from iterative.config import get_config as _get_config
-from pydantic2ts import generate_typescript_defs
+# from pydantic2ts import generate_typescript_defs
 
 def generate_model(entity_name: str, model_generation_path: Optional[str] = None):
     """
@@ -111,22 +111,22 @@ def edit_property_in_model(entity_name: str, property_name: str, new_type: str, 
     print(f"Property {property_name} edited in model {entity_name} at {file_path}")
 
 
-def generate_ts_definitions_from_pydantic(module_path: str, output_file_path: str):
-    """
-    Generates TypeScript definitions from a Pydantic module and saves them to a file.
+# def generate_ts_definitions_from_pydantic(module_path: str, output_file_path: str):
+#     """
+#     Generates TypeScript definitions from a Pydantic module and saves them to a file.
 
-    Args:
-        module_path (str): The import path of the Pydantic module (e.g., 'backend.api').
-        output_file_path (str): The path to the output TypeScript file.
-    """
-    try:
-        # Generate TypeScript definitions
-        ts_definitions = generate_typescript_defs(module_path)
+#     Args:
+#         module_path (str): The import path of the Pydantic module (e.g., 'backend.api').
+#         output_file_path (str): The path to the output TypeScript file.
+#     """
+#     try:
+#         # Generate TypeScript definitions
+#         ts_definitions = generate_typescript_defs(module_path)
 
-        # Save the definitions to the specified output file
-        with open(output_file_path, 'w') as file:
-            file.write(ts_definitions)
+#         # Save the definitions to the specified output file
+#         with open(output_file_path, 'w') as file:
+#             file.write(ts_definitions)
         
-        print(f"TypeScript definitions generated and saved to {output_file_path}")
-    except Exception as e:
-        print(f"An error occurred while generating TypeScript definitions: {e}")
+#         print(f"TypeScript definitions generated and saved to {output_file_path}")
+#     except Exception as e:
+#         print(f"An error occurred while generating TypeScript definitions: {e}")
