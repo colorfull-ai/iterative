@@ -61,8 +61,6 @@ class AssistantManager:
                     kwargs['tools'] = tools[:action_cap]
                     logger.warning(f"More than {action_cap} tools provided the assistant, truncating to {action_cap}. See debug logs for more info.")
                     logger.debug(f"Tools: {tools}")
-                    # get the tools that get cut off
-                    logger.debug(f"Truncated tools: {tools[action_cap:]}")
 
 
             assistant = self.client.beta.assistants.update(asst_id, **kwargs)

@@ -18,9 +18,6 @@ class Config:
         if user_config_path and os.path.exists(user_config_path):
             user_config = OmegaConf.merge(nosql_yorm_config.config,  default_config,  OmegaConf.load(user_config_path))
 
-            if not user_config_path:
-                logger.debug("No user configuration found")
-
         else:
             user_config = OmegaConf.merge(nosql_yorm_config.config, default_config)
 
@@ -39,7 +36,6 @@ class Config:
         while True:
             possible_config_path = os.path.join(current_dir, ".iterative", 'config.yaml')
             if os.path.exists(possible_config_path):
-                logger.debug(f"Found iterative project")
                 return possible_config_path
             new_dir = os.path.dirname(current_dir)
             if new_dir == current_dir:
@@ -64,6 +60,33 @@ class Config:
         self.config = OmegaConf.merge(self.config, other_config.config)
         set_nosql_yorm_config(self)
         return self
+    
+    def set(self, key, value):
+        """
+        Set a configuration value.
+
+        Args:
+            key (str): The configuration key to set.
+            value: The value to set for the key.
+        """
+        if key not in self.config:
+            raise KeyError(f"Config key {key} does not exist")
+
+        # Update the configuration
+        OmegaConf.update(self.config, key, value, merge=False)
+
+        # If there are any additional actions needed after updating the config,
+        # such as revalidating the configuration or updating external systems,
+        # include them here.
+        try:
+            validated_config = IterativeAppConfig(**OmegaConf.to_object(self.config))
+            self.config = OmegaConf.create(validated_config.dict())
+        except ValidationError as e:
+            print(f"Validation error after updating the configuration: {e}")
+            raise
+
+        # Update the nosql_yorm configuration if necessary
+        set_nosql_yorm_config(self)
 
 
 # Global shared configuration instance

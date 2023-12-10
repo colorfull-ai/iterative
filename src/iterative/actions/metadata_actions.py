@@ -18,7 +18,7 @@ def get_openapi_schema() -> Dict:
     """
     from iterative import web_app
 
-    logger.debug(web_app.openapi())
+    print(web_app.openapi())
 
     return web_app.openapi()
 
@@ -85,7 +85,7 @@ def get_local_db_metrics() -> str:
             })
     metrics = json.dumps(metrics, indent=4)
 
-    logger.debug(metrics)
+    print(metrics)
 
     # Convert the metrics dictionary to a JSON string
     return metrics

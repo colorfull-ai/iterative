@@ -24,7 +24,6 @@ def get_assistant_info():
     assistant_info = assistant_manager.get_assistant_info(assistant_id)
 
     print(_colored(f"Assistant Information: \n{json.dumps(json.loads(assistant_info), indent=2)}", 'yellow'))
-    logger.debug("Assistant Information:", assistant_info)
 
     return assistant_info
 
