@@ -15,3 +15,27 @@ assistant_conversation_thread_id: ""
 actions_cap: 128          # Set the cap for actions
 actions_count: 0          # Updated dynamically to reflect the current count
 warn_threshold: 100       # When to start warning about nearing the cap
+expose_default_actions_to_ai: true
+expose_project_actions_to_ai: true
+expose_api_actions_to_ai: true
+expose_default_actions_to_cli: true
+expose_project_actions_to_cli: true
+
+# Paths for different components
+actions_search_path: "actions"
+model_generation_path: "models"
+service_generation_path: "service"
+api_generation_path: "api"
+apps_path: "apps"
+data_path: "data"
+logs_path: "logs"
+tests_path: "tests"
+
+# Directories to reload
+reload_dirs:
+  - "actions"
+  - "models"
+  - "service"
+  - "api"
+  - "data"
+  - "tests"

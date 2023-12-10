@@ -2,7 +2,9 @@ import json
 import os
 from iterative import get_config as _get_config
 from openai import OpenAI
-from iterative.models.assistant import IterativeAssistant
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class AssistantManager:
@@ -50,6 +52,17 @@ class AssistantManager:
             del kwargs['id']
             del kwargs['created_at']
             del kwargs['object']
+
+            # get the first 128 functions from the tools
+            tools = kwargs.get('tools', [])
+            if tools:
+                if len(tools) > 128:
+                    kwargs['tools'] = tools[:128]
+                    logger.warning("More than 128 tools provided the assistant, truncating to 128. See debug logs for more info.")
+                    logger.debug(f"Tools: {tools}")
+                    # get the tools that get cut off
+                    logger.debug(f"Truncated tools: {tools[128:]}")
+
 
             assistant = self.client.beta.assistants.update(asst_id, **kwargs)
             return assistant

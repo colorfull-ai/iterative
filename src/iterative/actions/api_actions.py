@@ -25,7 +25,7 @@ def _generate_crud_endpoints(class_name):
     return textwrap.dedent(f"""
     from typing import List, Optional
     from fastapi import APIRouter, HTTPException, Query
-    from models.{class_name} import {class_name}
+    from models.{class_name_snake} import {class_name}
 
     router = APIRouter()
 
@@ -93,8 +93,7 @@ def generate_endpoints_for_model(model_name: str):
         print(f"Models directory {models_path} does not exist.")
         return
     
-    # Ensure the 'endpoints' directory exists
-    os.makedirs(endpoints_path, exist_ok=True)
+    os.makedirs(api_path, exist_ok=True)
 
     model_file_name = f"{model_name_pascal}.py"
     model_file_path = os.path.join(models_path, model_file_name)
@@ -106,10 +105,20 @@ def generate_endpoints_for_model(model_name: str):
 
     # Generate CRUD endpoint script
     endpoints_script = _generate_crud_endpoints(model_name_pascal)
-    endpoints_file_path = os.path.join(endpoints_path, f"{humps.decamelize(model_name)}_api.py")
+    endpoints_file_path = os.path.join(api_path, f"{humps.decamelize(model_name)}_api.py")
 
     # Write the endpoints to the file, overwriting any existing file
     with open(endpoints_file_path, 'w') as file:
         file.write(_dedent(endpoints_script))
 
     print(f"CRUD endpoints for {model_name} created at {endpoints_file_path}")
+
+
+def fetch_web_api_routes():
+    from iterative import web_app
+
+    routes = []
+    for route in web_app.routes:
+        routes.append(route.path)
+    print('\n'.join(routes))
+    return routes

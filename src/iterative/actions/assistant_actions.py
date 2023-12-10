@@ -45,6 +45,7 @@ def ask_assistant(message: str, assistant_id: str = None):
 
 def update_assistant_tools_with_actions():
     tools = get_actions()
+    
     assistant_id = _get_config().get("assistant_id")
     client = OpenAI()
     assistant_manager = AssistantManager(client)
@@ -68,6 +69,7 @@ def update_assistant_tools_with_actions():
         object=current_assistant.object,
         tools=tools  # Update the tools
     )
+
 
     # Call the updated update_assistant method
     return assistant_manager.update_assistant(assistant_id, **updated_assistant_properties.dict())
@@ -96,15 +98,7 @@ def get_actions():
     dummy_app = FastAPI()
     exposed_ai_actions, cli_actions = _get_configured_actions()
 
-    # check if cli_actions is in ai_actions and if not add them and integrate with web app, filter first
-    actions = {}
-    for action in cli_actions.values():
-        if action.id not in exposed_ai_actions:
-            exposed_ai_actions[action.id] = action
-            actions[action.id] = action
-        
-    
-    _integrate_actions_into_web_app(actions.values(), dummy_app)
+    _integrate_actions_into_web_app(exposed_ai_actions.values(), dummy_app)
 
     if _get_config().get("let_ai_use_apis"):
         # Add routers to the web app

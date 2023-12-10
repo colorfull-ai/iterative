@@ -58,15 +58,18 @@ def run_web_server():
 
     # Watchdog configuration
     reload_dirs = get_config().get('reload_dirs', [])
+    print(f"Watching directories for changes: {reload_dirs}")
     # Add the parent directory of this file (iterative package root)
     iterative_package_root = os.path.dirname(script_directory)
-    reload_dirs.append(iterative_package_root)
+    # reload_dirs.append(iterative_package_root)
 
     event_handler = ChangeHandler(restart_uvicorn)
     observer = Observer()
 
-    for directory in reload_dirs:
-        observer.schedule(event_handler, directory, recursive=True)
+    if get_config().get("reload", False):
+        print("Reload enabled.  Watching directories for changes...")
+        for directory in reload_dirs:
+            observer.schedule(event_handler, directory, recursive=True)
 
     observer.start()
 

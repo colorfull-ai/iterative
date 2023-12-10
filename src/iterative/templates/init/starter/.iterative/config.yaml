@@ -15,5 +15,8 @@ api_generation_path: "api"
 tests_path: "tests"
 # logging_level: "DEBUG"
 default_ai_model: "gpt-3.5-turbo"
-expose_project_actions: true
-expose_package_default_actions: true
+expose_default_actions_to_ai: true
+expose_project_actions_to_ai: true
+expose_api_actions_to_ai: true
+expose_default_actions_to_cli: true
+expose_project_actions_to_cli: true

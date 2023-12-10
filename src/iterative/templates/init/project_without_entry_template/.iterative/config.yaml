@@ -1,0 +1,22 @@
+read_write_to_cache: true
+reload: true
+
+persist_cache_as_db: false
+ngrok_domain: colorfull.ngrok.io
+run_ngrok: true
+fastapi_port: 8000
+fastapi_host: "0.0.0.0"
+assistant_id: "asst_puhjAkOSsC6qxJyQ7Xw9oKoq"
+assistant_conversation_thread_id: ""
+
+actions_search_path: "actions"  
+model_generation_path: "models"
+api_generation_path: "api"
+tests_path: "tests"
+# logging_level: "DEBUG"
+default_ai_model: "gpt-3.5-turbo"
+expose_default_actions_to_ai: true
+expose_project_actions_to_ai: true
+expose_api_actions_to_ai: true
+expose_default_actions_to_cli: true
+expose_project_actions_to_cli: true

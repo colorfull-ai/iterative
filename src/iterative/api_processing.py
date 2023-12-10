@@ -3,7 +3,7 @@ import inspect
 import yaml
 from typing import List
 from fastapi import APIRouter
-from iterative.utils import load_module_from_path, find_iterative_root
+from iterative.utils import load_module_from_path
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -52,7 +52,7 @@ def get_api_routers():
     """
     Finds all FastAPI routers in the project, including those in the 'apps' subdirectories.
     """
-    iterative_root = find_iterative_root(os.getcwd())
+    iterative_root = os.getcwd()
     if not iterative_root:
         iterative_root = os.getcwd()
         logger.debug(f"Could not find iterative root. Using current working directory: {iterative_root}")

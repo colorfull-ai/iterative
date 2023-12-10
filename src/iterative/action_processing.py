@@ -4,13 +4,13 @@ from fastapi import FastAPI
 from iterative.api_processing import get_api_routers
 from iterative.config import get_config
 from iterative.models.action import Action
-from iterative.utils import load_module_from_path, find_iterative_root
+from iterative.utils import load_module_from_path
 from logging import getLogger
 
 logger = getLogger(__name__)
 
 def get_project_actions():
-    iterative_root = find_iterative_root(os.getcwd())
+    iterative_root = os.getcwd()
     user_actions_path = get_config().get("actions_search_path", "actions")
 
     actions = []

@@ -1,9 +1,7 @@
 # src/iterative/cli.py
 
-import sys
 from iterative.server_management import run_web_server
 import typer
-import os
 
 iterative_cli_app = typer.Typer()
 

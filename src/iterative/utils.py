@@ -17,28 +17,12 @@ from iterative.models.action import Action
 from pydantic import BaseModel
 
 
-def find_iterative_root(starting_directory):
-    current_directory = starting_directory
-    root_directory = os.path.abspath(os.sep)
-
-    while current_directory != root_directory:
-        # List only directories starting with '.'
-        directories = [d for d in os.listdir(current_directory) if os.path.isdir(os.path.join(current_directory, d)) and d.startswith('.')]
-        
-        if '.iterative' in directories:
-            return current_directory
-
-        current_directory = os.path.dirname(current_directory)
-
-    return None  # Return None if .iterative directory is not found
-
-
 def snake_case(s: str) -> str:
     return s.replace("-", "_").replace(" ", "_")
 
 def load_module_from_path(path: str):
     # Add the directory containing 'models' to sys.path
-    root_directory = find_iterative_root(os.getcwd())
+    root_directory = os.getcwd()
     if root_directory not in sys.path:
         sys.path.insert(0, root_directory)
 
