@@ -100,6 +100,5 @@ def get_api_actions():
             actions.append(action)
 
             # Optional print for debugging
-            logger.debug(f"Created action for route {route.path}")
 
     return actions

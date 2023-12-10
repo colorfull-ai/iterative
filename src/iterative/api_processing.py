@@ -62,7 +62,6 @@ def get_api_routers():
         if '.iterative' in dirs:
             config_path = os.path.join(root, '.iterative', 'config.yaml')
             if not os.path.exists(config_path):
-                logger.debug(f"Skipping directory {root} because it does not contain a .iterative/config.yaml file.")
                 continue
             api_path = read_api_path_from_config(config_path)
             full_api_path = os.path.join(root, api_path)

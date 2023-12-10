@@ -29,7 +29,6 @@ def prep_app():
     integrate_actions_into_cli_app(cli_actions.values(), cli_app)
 
     # Add routers to the web app
-    logger.debug("Adding API routers to web app...")
     routers = get_api_routers()
     for router in routers:
         web_app.include_router(router)
