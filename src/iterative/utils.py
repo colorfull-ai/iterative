@@ -21,12 +21,15 @@ def snake_case(s: str) -> str:
     return s.replace("-", "_").replace(" ", "_")
 
 def load_module_from_path(path: str):
-    # Add the directory containing 'models' to sys.path
-    root_directory = os.getcwd()
-    if root_directory not in sys.path:
-        sys.path.insert(0, root_directory)
+    # Derive a module name from the file path
+    module_name = os.path.splitext(os.path.basename(path))[0]
 
-    spec = importlib.util.spec_from_file_location("module.name", path)
+    # Add the directory containing the module to sys.path
+    module_dir = os.path.dirname(path)
+    if module_dir not in sys.path:
+        sys.path.insert(0, module_dir)
+
+    spec = importlib.util.spec_from_file_location(module_name, path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

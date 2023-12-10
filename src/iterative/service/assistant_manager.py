@@ -56,12 +56,13 @@ class AssistantManager:
             # get the first 128 functions from the tools
             tools = kwargs.get('tools', [])
             if tools:
-                if len(tools) > 128:
-                    kwargs['tools'] = tools[:128]
-                    logger.warning("More than 128 tools provided the assistant, truncating to 128. See debug logs for more info.")
+                action_cap = _get_config().get("actions_cap", 128)
+                if len(tools) > action_cap:
+                    kwargs['tools'] = tools[:action_cap]
+                    logger.warning(f"More than {action_cap} tools provided the assistant, truncating to {action_cap}. See debug logs for more info.")
                     logger.debug(f"Tools: {tools}")
                     # get the tools that get cut off
-                    logger.debug(f"Truncated tools: {tools[128:]}")
+                    logger.debug(f"Truncated tools: {tools[action_cap:]}")
 
 
             assistant = self.client.beta.assistants.update(asst_id, **kwargs)
