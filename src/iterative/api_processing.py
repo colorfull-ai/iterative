@@ -55,7 +55,6 @@ def get_api_routers():
     iterative_root = os.getcwd()
     if not iterative_root:
         iterative_root = os.getcwd()
-        logger.debug(f"Could not find iterative root. Using current working directory: {iterative_root}")
 
     routers = []
     for root, dirs, files in os.walk(iterative_root):
@@ -68,7 +67,6 @@ def get_api_routers():
             if os.path.exists(full_api_path):
                 routers.extend(get_api_routers_from_path(full_api_path))
     
-    logger.debug(f"Total routers found: {len(routers)}")
     return routers
 
 # # Example usage

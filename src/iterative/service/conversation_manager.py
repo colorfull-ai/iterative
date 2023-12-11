@@ -34,7 +34,7 @@ class ConversationManager:
         )
 
     def process_conversation(self):
-        logger.debug("Processing conversation...")
+        logger.info("Processing conversation...")
 
         if not self.current_thread:
             raise Exception("No active conversation thread.")
@@ -91,7 +91,7 @@ class ConversationManager:
         return action_result
 
     def submit_tool_outputs(self, tool_outputs: List[Dict]):
-        logger.debug("Submitting tool outputs...")
+        logger.info("Submitting tool outputs...")
 
         for _ in tqdm(range(300), desc="Submitting...", leave=False):
             time.sleep(0.03)

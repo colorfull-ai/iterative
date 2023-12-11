@@ -101,7 +101,6 @@ def get_actions():
 
     if _get_config().get("let_ai_use_apis"):
         # Add routers to the web app
-        logger.debug("Adding API routers to web app...")
         routers = _get_api_routers()
         for router in routers:
             dummy_app.include_router(router)

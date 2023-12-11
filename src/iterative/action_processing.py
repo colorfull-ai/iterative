@@ -43,7 +43,6 @@ def process_python_action_files(directory, script_source):
 def get_package_default_actions():
     default_actions_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "actions")
     
-    logger.debug(f"Processing default actions in {default_actions_directory}")
     return process_python_action_files(default_actions_directory, "Package Default")
 
 def get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=True):
