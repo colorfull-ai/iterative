@@ -1,4 +1,3 @@
-import ast
 import os
 import textwrap
 import humps
@@ -6,17 +5,9 @@ from logging import getLogger as _getLogger
 from iterative.config import get_config as _get_config
 from textwrap import dedent as _dedent
 
+from iterative.utils import create_project_path as _create_project_path
+
 logger = _getLogger(__name__)
-
-class ClassFinder(ast.NodeVisitor):
-    def __init__(self):
-        self.classes = []
-
-    def visit_ClassDef(self, node):
-        for base in node.bases:
-            if isinstance(base, ast.Name) and base.id == 'IterativeModel':
-                self.classes.append(node.name)
-        self.generic_visit(node)
 
 def _generate_crud_endpoints(class_name):
     class_name_snake = humps.decamelize(class_name)  # snake_case
@@ -84,9 +75,8 @@ def generate_endpoints_for_model(model_name: str):
 
     """
     model_name_pascal = humps.pascalize(model_name)
-    models_path = os.path.join(os.getcwd(), _get_config().config.get('model_generation_path'))
-    api_path = os.path.join(os.getcwd(), _get_config().config.get('api_generation_path'))
-    endpoints_path = os.path.join(api_path, f'{humps.depascalize(model_name)}_api.py')
+    models_path = _create_project_path(_get_config().get("model_generation_path"))
+    api_path = _create_project_path(_get_config().get("api_generation_path"))
 
     # Ensure the 'models' directory exists
     if not os.path.exists(models_path):

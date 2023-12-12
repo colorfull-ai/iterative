@@ -24,7 +24,6 @@ def prep_app():
     cache.load_cache()
 
     web_actions, cli_actions = _get_configured_actions()
-
     integrate_actions_into_web_app(web_actions.values(), web_app)
     integrate_actions_into_cli_app(cli_actions.values(), cli_app)
 

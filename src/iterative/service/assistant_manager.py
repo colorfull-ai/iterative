@@ -1,6 +1,7 @@
 import json
 import os
 from iterative import get_config as _get_config
+from iterative.models.assistant import IterativeAssistant
 from openai import OpenAI
 from logging import getLogger
 
@@ -41,32 +42,42 @@ class AssistantManager:
             return None
         
     def update_assistant(self, asst_id=None, **kwargs):
-        try:
-            if not asst_id:
-                asst_id = _get_config().get("assistant_id")
-            
-            if not asst_id:
-                print("No assistant ID provided.")
-                return 
-            
-            del kwargs['id']
-            del kwargs['created_at']
-            del kwargs['object']
+        print("Updating assistant")
 
-            # get the first 128 functions from the tools
-            tools = kwargs.get('tools', [])
-            if tools:
-                action_cap = _get_config().get("actions_cap", 128)
-                if len(tools) > action_cap:
-                    kwargs['tools'] = tools[:action_cap]
-                    logger.warning(f"More than {action_cap} tools provided the assistant, truncating to {action_cap}. See debug logs for more info.")
+        if not asst_id:
+            asst_id = _get_config().get("assistant_id")
+        
+        if not asst_id:
+            print("No assistant ID provided.")
+            return 
+        
+        # Get the schema of IterativeAssistant to know the valid keys
+        valid_keys = json.loads(IterativeAssistant.schema_json()).keys()
+        
+        # Filter kwargs to only include valid keys
+        attrs = {key: kwargs[key] for key in valid_keys if key in kwargs}
 
+        # Special handling for 'tools', if present in kwargs
+        if 'tools' in kwargs:
+            tools = kwargs['tools']
+            action_cap = _get_config().get("actions_cap", 128)
+            if len(tools) > action_cap:
+                attrs['tools'] = tools[:action_cap]
+                logger.warning(f"More than {action_cap} tools provided, truncating to {action_cap}.")
+            else:
+                attrs['tools'] = tools
 
-            assistant = self.client.beta.assistants.update(asst_id, **kwargs)
-            return assistant
-        except Exception as e:
-            print(json.dumps(e, indent=2))
-            # print(f"Error updating assistant: {e}")
+        # Update the assistant if there are valid attributes to update
+        if attrs:
+            try:
+                assistant = self.client.beta.assistants.update(asst_id, **attrs)
+                logger.info(f"Assistant {asst_id} updated.")
+                return assistant
+            except Exception as e:
+                logger.error(f"Error updating assistant: {e}")
+                return None
+        else:
+            logger.info(f"No valid attributes to update for assistant {asst_id}.")
             return None
         
     def upload_docs_folder(self, folder_path="docs"):
@@ -94,7 +105,7 @@ class AssistantManager:
         """Uploads a single document to OpenAI."""
         try:
             with open(file_path, 'rb') as file:
-                response = self.client.files.create(file=file, purpose="fine-tune")
+                response = self.client.files.create(file=file, purpose="assistants")
                 print(f"Document '{file_path}' uploaded successfully.")
                 return response
         except Exception as e:

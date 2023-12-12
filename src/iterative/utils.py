@@ -50,4 +50,10 @@ def print_iterative():
                                 \__\/         \__\|         \__\/                                      ~~~~        \__\/    
     """
     print(ascii_art + " : By Colorfull")
-    already_printed = True
+
+
+def create_project_path(folder_path, *args):
+    if folder_path.startswith('/'):
+        return os.path.join(folder_path, *args)
+    else:
+        return os.path.join(os.getcwd(), folder_path, *args)

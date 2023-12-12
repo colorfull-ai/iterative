@@ -1,10 +1,9 @@
 import json
 import os
-from pathlib import Path
 import shutil
-import subprocess
 from iterative import get_config as _get_config
 from iterative.models.config import IterativeAppConfig
+from iterative.utils import create_project_path as _create_project_path
 import typer
 from typing import Optional
 from omegaconf import OmegaConf
@@ -134,7 +133,8 @@ def create_or_overwrite_script(script_name: str, script_content: str, actions_fo
         script_name += '.py'
 
     # Get the full path for the actions folder and ensure it exists
-    actions_path = os.path.join(os.getcwd(), actions_folder)
+    # actions_path = os.path.join(os.getcwd(), actions_folder)
+    actions_path = _create_project_path(actions_folder)
     os.makedirs(actions_path, exist_ok=True)
 
     # Full path for the script file
@@ -147,7 +147,7 @@ def create_or_overwrite_script(script_name: str, script_content: str, actions_fo
     print(f"Script '{script_name}' has been created/overwritten at '{script_file_path}'")
 
 
-def read_script_content(script_name: str, actions_folder: str = 'actions') -> str:
+def read_script_content(script_name: str, folder_to_read_from: str = 'service') -> str:
     """
     Reads the content of a specified script file from the actions folder.
 
@@ -155,7 +155,8 @@ def read_script_content(script_name: str, actions_folder: str = 'actions') -> st
         str: The content of the script file as a string.
     """
     # Construct the full file path
-    script_file_path = os.path.join(os.getcwd(), actions_folder, script_name)
+    script_file_path = os.path.join(os.getcwd(), folder_to_read_from, script_name)
+
 
     # Check if the file exists
     if not os.path.exists(script_file_path):
@@ -237,59 +238,3 @@ def save_config():
         logger.info(f"Configuration saved to {config_path}")
     else:
         raise FileNotFoundError("Configuration file not found.")
-
-
-def _create_pyproject_toml(project_name, package_name, description="A brief description of your project"):
-    """
-    Creates a pyproject.toml file with the given project name and package name.
-    """
-    content = f"""
-[tool.poetry]
-name = "{project_name}"
-version = "0.1.0"
-description = "{description}"
-authors = ["Your Name <you@example.com>"]
-license = "MIT"
-packages = [{{ include = "{package_name}" }}]
-[tool.poetry.dependencies]
-python = "^3.8"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-"""
-    with open("pyproject.toml", "w") as file:
-        file.write(content)
-
-def _install_with_poetry():
-    """
-    Runs Poetry install command.
-    """
-    try:
-        subprocess.run(["poetry", "install"], check=True)
-        print("Project installed successfully using Poetry.")
-    except subprocess.CalledProcessError as e:
-        print(f"An error occurred while installing the project: {e}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-
-def install_as_package():
-    """
-    Creates a pyproject.toml file and installs the current directory as a package using Poetry.
-    """
-    project_dir = Path(os.getcwd())
-    project_name = project_dir.name
-    package_name = project_name.replace("-", "_")  # Replace hyphens with underscores for Python package naming
-
-    # Ensure the package directory exists
-    (project_dir / package_name).mkdir(exist_ok=True)
-
-    # Create an __init__.py file in the package directory if it doesn't exist
-    init_file = project_dir / package_name / "__init__.py"
-    init_file.touch()
-
-    # Create pyproject.toml
-    _create_pyproject_toml(project_name, package_name)
-
-    # Install the project using Poetry
-    _install_with_poetry()

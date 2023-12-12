@@ -24,6 +24,10 @@ class IterativeAppConfig(IterativeModel):
     data_path: Optional[str] = "data"
     logs_path: Optional[str] = "logs"
     tests_path: Optional[str] = "tests"
+    docs_path: Optional[str] = "docs"
+    ui_path: Optional[str] = "ui"
+    ui_clients_path: Optional[str] = "clients"
+    ui_models_path: Optional[str] = "models"
     reload_dirs: Optional[list[str]] = ["."]  # Specify directories to be reloaded
     reload: Optional[bool] = True
     persist_cache_as_db: Optional[bool] = False

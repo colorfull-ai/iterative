@@ -25,7 +25,7 @@ def read_api_path_from_config(config_path: str) -> str:
         
         return config.get('api_generation_path', 'api')
 
-def get_api_routers_from_path(api_path: str) -> List[APIRouter]:
+def get_api_routers_from_path(api_path: str, file_name: str = None) -> List[APIRouter]:
     """
     Searches for FastAPI routers in the specified 'api' path.
 
@@ -40,6 +40,8 @@ def get_api_routers_from_path(api_path: str) -> List[APIRouter]:
         for root, dirs, files in os.walk(api_path):
             for file in files:
                 if file.endswith(".py"):
+                    if file_name and file != file_name:
+                        continue
                     full_path = os.path.join(root, file)
                     # print(f"Found router: {full_path}")
                     module = load_module_from_path(full_path)
@@ -69,5 +71,30 @@ def get_api_routers():
     
     return routers
 
-# # Example usage
-# all_routers = find_all_api_routers()
+def get_model_router(model_name: str) -> List[APIRouter]:
+    """
+    Finds FastAPI routers in the project, filtering by a specified model name.
+
+    Args:
+        model_name (str): The name of the model to find the router for.
+
+    Returns:
+        List[APIRouter]: A list of FastAPI routers related to the specified model.
+    """
+    iterative_root = os.getcwd()
+    target_file_name = f"{model_name.lower()}_api.py"  # File name pattern
+    routers = []
+
+    for root, dirs, _ in os.walk(iterative_root):
+        if '.iterative' in dirs:
+            config_path = os.path.join(root, '.iterative', 'config.yaml')
+            if not os.path.exists(config_path):
+                continue
+
+            api_path = read_api_path_from_config(config_path)
+            full_api_path = os.path.join(root, api_path)
+            if os.path.exists(full_api_path):
+                # Filter routers by the target file name
+                for router in get_api_routers_from_path(full_api_path, target_file_name):
+                    print(f"Found router: {router}")
+                    return router

@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from iterative.api_processing import get_api_routers as _get_api_routers
 from iterative.service.assistant_manager import AssistantManager
@@ -6,7 +7,6 @@ from iterative.service.conversation_manager import ConversationManager
 from iterative.web_app_integration import integrate_actions_into_web_app as _integrate_actions_into_web_app
 from iterative.models.assistant import IterativeAssistant
 from openai import OpenAI
-from typing import Dict, List
 from iterative import get_config as _get_config
 from iterative import get_all_actions as _get_all_actions
 from tqdm import tqdm
@@ -257,3 +257,42 @@ def execute_action_calls(json_commands):
         logger.error(f"JSON decode error: {e}")
     except Exception as e:
         logger.error(f"Error executing function calls: {e}")
+
+
+def set_docs_as_knowledge():
+    """
+    Searches for a specified folder and uploads its contents to OpenAI.
+
+    Args:
+        folder_path (str): The path to the folder whose contents are to be uploaded.
+
+    Returns:
+        list: A list of uploaded file references, or None if an error occurs.
+    """
+    folder_path = _get_config().get("docs_path", "docs")
+
+    if not os.path.exists(folder_path) or not os.path.isdir(folder_path):
+        logger.error(f"Folder '{folder_path}' does not exist or is not a directory.")
+        return None
+
+    try:
+        client = OpenAI()  # Initialize the OpenAI client
+        assistant_manager = AssistantManager(client)  # Initialize the AssistantManager
+
+        files = assistant_manager.upload_docs_folder(folder_path)
+        for file in files:
+            
+            print(f"Uploaded file: {file}")
+
+        ids = [file.id for file in files]
+        print(f"File IDs: {ids}")
+
+        # Update the assistant's file IDs
+        assistant_id = _get_config().get("assistant_id")
+        print(f"assistant_id: {assistant_id}")
+
+        assistant_manager.update_assistant(assistant_id, file_ids=ids)
+        return "updated the assistant with knowledge in the docs folder"
+    except Exception as e:
+        logger.error(f"Error occurred during document upload: {e}")
+        return None
