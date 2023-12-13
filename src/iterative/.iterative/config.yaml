@@ -10,7 +10,7 @@ persist_cache_as_db: false
 default_ai_model: "gpt-3.5-turbo"
 fastapi_port: 5279
 fastapi_host: "0.0.0.0"
-assistant_id: "asst_01VdA1ESvylwvzqDoXGAO84N" ""
+assistant_id: "asst_01VdA1ESvylwvzqDoXGAO84N"
 assistant_conversation_thread_id: ""
 actions_cap: 128          # Set the cap for actions
 actions_count: 0          # Updated dynamically to reflect the current count

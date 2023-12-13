@@ -238,3 +238,6 @@ def save_config():
         logger.info(f"Configuration saved to {config_path}")
     else:
         raise FileNotFoundError("Configuration file not found.")
+
+def hello_world():
+    print("Hello world!")

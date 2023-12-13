@@ -237,6 +237,7 @@ def execute_action_calls(json_commands):
                    function's parameters.
     """
     try:
+        actions = _get_all_actions()
         # Deserialize the JSON string into a Python object
         commands = json.loads(json_commands)
         
@@ -245,13 +246,14 @@ def execute_action_calls(json_commands):
             function_name = command['function']
             args = command['args']
 
-            # Ensure the function exists and is callable
-            function_to_call = globals().get(function_name)
-            if callable(function_to_call):
+            actions_to_call = actions.get(function_name)
+            print(actions_to_call)
+
+            if callable(actions_to_call.function):
                 # Execute the function with the provided arguments
-                function_to_call(**args)
+                actions_to_call.function(**args)
             else:
-                logger.error(f"Function {function_name} not found or is not callable.")
+                logger.error(f"Function {actions_to_call.function} not found or is not callable.")
 
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {e}")

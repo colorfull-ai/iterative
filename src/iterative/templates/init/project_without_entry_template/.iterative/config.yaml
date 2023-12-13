@@ -6,7 +6,7 @@ ngrok_domain: colorfull.ngrok.io
 run_ngrok: true
 fastapi_port: 8000
 fastapi_host: "0.0.0.0"
-assistant_id: "asst_01VdA1ESvylwvzqDoXGAO84N" "asst_puhjAkOSsC6qxJyQ7Xw9oKoq"
+assistant_id: "asst_01VdA1ESvylwvzqDoXGAO84N" 
 assistant_conversation_thread_id: ""
 
 actions_search_path: "actions"  

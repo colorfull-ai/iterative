@@ -1,5 +1,6 @@
 import os
 import inspect
+from typing import Dict
 from fastapi import FastAPI
 from iterative.api_processing import get_api_routers
 from iterative.config import get_config
@@ -45,7 +46,7 @@ def get_package_default_actions():
     
     return process_python_action_files(default_actions_directory, "Package Default")
 
-def get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=True):
+def get_all_actions(include_project_actions=True, include_package_default_actions=True, include_api_actions=True) -> Dict[str, Action]:
     """
     Get all actions, with options to include or exclude project actions and package default actions.
 
