@@ -253,7 +253,7 @@ def execute_action_calls(json_commands):
                 # Execute the function with the provided arguments
                 actions_to_call.function(**args)
             else:
-                logger.error(f"Function {actions_to_call.function} not found or is not callable.")
+                logger.error(f"Function {function_name} not found or is not callable.")
 
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {e}")
@@ -282,9 +282,6 @@ def set_docs_as_knowledge():
         assistant_manager = AssistantManager(client)  # Initialize the AssistantManager
 
         files = assistant_manager.upload_docs_folder(folder_path)
-        for file in files:
-            
-            print(f"Uploaded file: {file}")
 
         ids = [file.id for file in files]
         print(f"File IDs: {ids}")
@@ -298,3 +295,22 @@ def set_docs_as_knowledge():
     except Exception as e:
         logger.error(f"Error occurred during document upload: {e}")
         return None
+
+
+def delete_files():
+    """
+    Searches for a specified folder and uploads its contents to OpenAI.
+
+    Args:
+        folder_path (str): The path to the folder whose contents are to be uploaded.
+
+    Returns:
+        list: A list of uploaded file references, or None if an error occurs.
+    """
+    client = OpenAI()  # Initialize the OpenAI client
+    assistant_manager = AssistantManager(client)  # Initialize the AssistantManager
+
+    files = assistant_manager.retrieve_files()
+
+    for file in files:
+        assistant_manager.delete_file(file.id)

@@ -83,7 +83,6 @@ def get_model_router(model_name: str) -> List[APIRouter]:
     """
     iterative_root = os.getcwd()
     target_file_name = f"{model_name.lower()}_api.py"  # File name pattern
-    routers = []
 
     for root, dirs, _ in os.walk(iterative_root):
         if '.iterative' in dirs:

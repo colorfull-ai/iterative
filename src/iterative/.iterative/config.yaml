@@ -2,9 +2,9 @@ actions_search_path: "actions"
 model_generation_path: "models"
 api_generation_path: "api"
 tests_path: "tests"
-tests_path: "service"
+service_path: "service"
 apps_path: "apps" # For extending the service, growing the app with AI managed apps decoupled
-logging_level: "DEBUG"
+logging_level: "ERROR"
 reload: true
 persist_cache_as_db: false
 default_ai_model: "gpt-3.5-turbo"
@@ -22,14 +22,9 @@ expose_default_actions_to_cli: true
 expose_project_actions_to_cli: true
 
 # Paths for different components
-actions_search_path: "actions"
-model_generation_path: "models"
 service_generation_path: "service"
-api_generation_path: "api"
-apps_path: "apps"
 data_path: "data"
 logs_path: "logs"
-tests_path: "tests"
 docs_path: "docs"
 path_path: "ui"
 ui_clients_path: "clients"

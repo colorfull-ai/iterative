@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 from iterative import get_config as _get_config
+from iterative.api_processing import get_api_routers as _get_api_routers
 from iterative.models.config import IterativeAppConfig
 from iterative.utils import create_project_path as _create_project_path
 import typer
@@ -239,5 +240,6 @@ def save_config():
     else:
         raise FileNotFoundError("Configuration file not found.")
 
-def hello_world():
-    print("Hello world!")
+def find_routers():
+    
+    return _get_api_routers()

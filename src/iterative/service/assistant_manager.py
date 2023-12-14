@@ -52,10 +52,18 @@ class AssistantManager:
             return 
         
         # Get the schema of IterativeAssistant to know the valid keys
-        valid_keys = json.loads(IterativeAssistant.schema_json()).keys()
+        valid_keys = json.loads(IterativeAssistant.schema_json())['properties'].keys()
         
         # Filter kwargs to only include valid keys
         attrs = {key: kwargs[key] for key in valid_keys if key in kwargs}
+        if 'id' in attrs:
+            del attrs['id']
+
+        if 'created_at' in attrs:
+            del attrs['created_at']
+        
+        if 'object' in attrs:
+            del attrs['object']
 
         # Special handling for 'tools', if present in kwargs
         if 'tools' in kwargs:
@@ -67,9 +75,16 @@ class AssistantManager:
             else:
                 attrs['tools'] = tools
 
+        # TODO: Put this back in after fixing tools to always include retrieval 
+        if 'file_ids' in kwargs:
+            del attrs['file_ids']
+
         # Update the assistant if there are valid attributes to update
         if attrs:
             try:
+                logger.debug(f"Updating assistant {asst_id} with attributes: {attrs.keys()}")
+                # remove all keys and values where the value is none
+                attrs = {k: v for k, v in attrs.items() if v is not None}
                 assistant = self.client.beta.assistants.update(asst_id, **attrs)
                 logger.info(f"Assistant {asst_id} updated.")
                 return assistant
@@ -123,10 +138,15 @@ class AssistantManager:
     def retrieve_file(self, file_id):
         """Retrieve a specific file from OpenAI."""
         try:
+            self.client.files.list()
             return self.client.files.retrieve(file_id)
         except Exception as e:
             print(f"Error retrieving file '{file_id}': {e}")
             return None
+        
+    def retrieve_files(self):
+        """Retrieve a specific file from OpenAI."""
+        return self.client.files.list()
 
     def retrieve_file_content(self, file_id):
         """Retrieve the content of a specific file from OpenAI."""

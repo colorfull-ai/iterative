@@ -71,7 +71,7 @@ def get_all_actions(include_project_actions=True, include_package_default_action
     all_actions_dict = {}
     for action in actions:
         if action.name in all_actions_dict:
-            raise ValueError(f"Duplicate action found: {action.name}")
+            continue
         all_actions_dict[action.name] = action
 
     return all_actions_dict

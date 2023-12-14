@@ -1,5 +1,7 @@
 import subprocess
 import sys
+
+from nosql_yorm import NameSpacedCache
 from iterative.api_processing import get_api_routers
 from iterative.web import iterative_user_web_app as web_app
 from iterative.cli import iterative_cli_app as cli_app
@@ -15,6 +17,7 @@ from iterative.models.iterative import IterativeModel
 from iterative.action_processing import get_all_actions
 from iterative.actions.assistant_actions import update_assistant_tools_with_actions
 from logging import getLogger
+import logging
 
 logger = getLogger(__name__)
 
@@ -22,6 +25,9 @@ def prep_app():
     config = Config()
     set_config(config)
     cache.load_cache()
+
+    logging_level = get_config().get("logging_level", "INFO")
+    logging.basicConfig(level=logging_level.upper())
 
     web_actions, cli_actions = _get_configured_actions()
     integrate_actions_into_web_app(web_actions.values(), web_app)
@@ -34,11 +40,6 @@ def prep_app():
 
     update_assistant_tools_with_actions()
 
-def set_logging_level(level):
-    import logging
-    logging_level = get_config().get("logging_level", level)
-    logging.basicConfig(level=logging_level)
-    
 
 def start_app():
     prep_app()
@@ -75,7 +76,8 @@ __all__ = [
     "ConversationManager",
     "ask_assistant",
     "get_assistant_info",
-    "get_all_actions"
+    "get_all_actions",
+    "NameSpacedCache"
 ]
 
 if __name__ == "__main__":
