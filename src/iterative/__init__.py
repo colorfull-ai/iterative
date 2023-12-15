@@ -26,8 +26,17 @@ def prep_app():
     set_config(config)
     cache.load_cache()
 
+    LOGGING_LEVELS = {
+        'CRITICAL': logging.CRITICAL,
+        'ERROR': logging.ERROR,
+        'WARNING': logging.WARNING,
+        'INFO': logging.INFO,
+        'DEBUG': logging.DEBUG,
+    }
+
     logging_level = get_config().get("logging_level", "INFO")
-    logging.basicConfig(level=logging_level.upper())
+    logging_level = LOGGING_LEVELS.get(logging_level.upper(), logging.INFO)
+    logging.basicConfig(level=logging_level)
 
     web_actions, cli_actions = _get_configured_actions()
     integrate_actions_into_web_app(web_actions.values(), web_app)

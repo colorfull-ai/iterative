@@ -18,6 +18,7 @@ class Config:
         if user_config_path and os.path.exists(user_config_path):
             user_config = OmegaConf.merge(nosql_yorm_config.config,  default_config,  OmegaConf.load(user_config_path))
 
+
         else:
             user_config = OmegaConf.merge(nosql_yorm_config.config, default_config)
 
@@ -36,6 +37,7 @@ class Config:
         while True:
             possible_config_path = os.path.join(current_dir, ".iterative", 'config.yaml')
             if os.path.exists(possible_config_path):
+                logger.debug(f"Found iterative project")
                 return possible_config_path
             new_dir = os.path.dirname(current_dir)
             if new_dir == current_dir:
@@ -46,7 +48,8 @@ class Config:
     def get(self, key, default=None):
         if not key:
             return default
-        return self.config.get(key, default)
+        value = self.config.get(key, default)
+        return value
 
     def merge_config(self, other_config):
         """

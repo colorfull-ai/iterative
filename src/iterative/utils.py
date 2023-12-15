@@ -57,3 +57,17 @@ def create_project_path(folder_path, *args):
         return os.path.join(folder_path, *args)
     else:
         return os.path.join(os.getcwd(), folder_path, *args)
+    
+
+def is_cwd_iterative_project():
+    # Ensure the .iterative folder exists
+    return os.path.exists(os.path.join(os.getcwd(), ".iterative"))
+
+# get the parent directory of the nearest .iterative folder in the path from the current working directory upwards
+def get_project_root():
+    path = os.getcwd()
+    while path != '/':
+        if os.path.exists(os.path.join(path, ".iterative")):
+            return path
+        path = os.path.dirname(path)
+    return None
