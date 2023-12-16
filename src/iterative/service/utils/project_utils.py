@@ -1,20 +1,6 @@
-from datetime import date, timezone
-import datetime
-from enum import Enum
 import sys
-from typing import List
-import uuid
-import json
-from functools import wraps
 import os
 import importlib.util
-from fastapi import Response
-from requests import Response as RequestsResponse
-
-import logging
-
-from iterative.models.action import Action
-from pydantic import BaseModel
 
 
 def snake_case(s: str) -> str:
@@ -63,8 +49,22 @@ def is_cwd_iterative_project():
     # Ensure the .iterative folder exists
     return os.path.exists(os.path.join(os.getcwd(), ".iterative"))
 
-# get the parent directory of the nearest .iterative folder in the path from the current working directory upwards
 def get_project_root():
+    """
+    This function returns the parent directory of the nearest `.iterative` folder. 
+    It starts from the current working directory and moves upwards in the directory tree. 
+
+    The function works as follows:
+    1. It gets the current working directory.
+    2. It enters a loop that continues until the root directory ('/') is reached.
+    3. In each iteration of the loop, it checks if a `.iterative` folder exists in the current directory.
+    4. If such a folder is found, it returns the current directory, which is the parent directory of the `.iterative` folder.
+    5. If no `.iterative` folder is found in the current directory, it moves one level up in the directory tree.
+    6. If the function reaches the root directory without finding a `.iterative` folder, it returns None.
+
+    Returns:
+        str: The path to the parent directory of the nearest `.iterative` folder, or None if no such folder is found.
+    """
     path = os.getcwd()
     while path != '/':
         if os.path.exists(os.path.join(path, ".iterative")):

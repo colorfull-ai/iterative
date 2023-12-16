@@ -5,7 +5,7 @@ from typing import Callable, List, get_type_hints
 import inspect
 from iterative.models.action import Action
 
-from iterative.utils import load_module_from_path, snake_case
+from iterative.service.utils.project_utils import load_module_from_path, snake_case
 
 def create_endpoint(func: Callable, name: str):
     router = APIRouter()

@@ -3,7 +3,7 @@ import inspect
 import yaml
 from typing import List
 from fastapi import APIRouter
-from iterative.utils import load_module_from_path
+from iterative.service.utils.project_utils import load_module_from_path
 from logging import getLogger
 
 logger = getLogger(__name__)

@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from iterative.api_processing import get_api_routers
 from iterative.config import get_config
 from iterative.models.action import Action
-from iterative.utils import load_module_from_path
+from iterative.service.utils.project_utils import load_module_from_path
 from logging import getLogger
 
 logger = getLogger(__name__)

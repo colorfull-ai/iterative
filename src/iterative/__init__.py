@@ -2,6 +2,8 @@ import subprocess
 import sys
 
 from nosql_yorm import NameSpacedCache
+from nosql_yorm.models import set_firestore_client
+from iterative.service.utils.project_utils import get_project_root
 from iterative.api_processing import get_api_routers
 from iterative.web import iterative_user_web_app as web_app
 from iterative.cli import iterative_cli_app as cli_app
@@ -14,6 +16,7 @@ from iterative.config import Config, set_config, get_config
 from iterative.cache import cache
 from iterative.actions.assistant_actions import AssistantManager, ConversationManager, _get_configured_actions, ask_assistant, get_assistant_info
 from iterative.models.iterative import IterativeModel
+from iterative.models.config import IterativeAppConfig
 from iterative.action_processing import get_all_actions
 from iterative.actions.assistant_actions import update_assistant_tools_with_actions
 from logging import getLogger
@@ -86,7 +89,10 @@ __all__ = [
     "ask_assistant",
     "get_assistant_info",
     "get_all_actions",
-    "NameSpacedCache"
+    "NameSpacedCache",
+    "set_firestore_client",
+    "get_project_root",
+    "IterativeAppConfig",
 ]
 
 if __name__ == "__main__":

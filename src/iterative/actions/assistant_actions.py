@@ -4,7 +4,7 @@ import time
 from iterative.api_processing import get_api_routers as _get_api_routers
 from iterative.service.assistant_manager import AssistantManager
 from iterative.service.conversation_manager import ConversationManager
-from iterative.utils import is_cwd_iterative_project
+from iterative.service.utils.project_utils import is_cwd_iterative_project
 from iterative.web_app_integration import integrate_actions_into_web_app as _integrate_actions_into_web_app
 from iterative.models.assistant import IterativeAssistant
 from openai import OpenAI

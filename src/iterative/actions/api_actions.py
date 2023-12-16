@@ -5,7 +5,7 @@ from logging import getLogger as _getLogger
 from iterative.config import get_config as _get_config
 from textwrap import dedent as _dedent
 
-from iterative.utils import create_project_path as _create_project_path
+from iterative.service.utils.project_utils import create_project_path as _create_project_path
 
 logger = _getLogger(__name__)
 

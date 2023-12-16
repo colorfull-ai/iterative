@@ -3,7 +3,7 @@ from textwrap import dedent as _dedent
 from typing import  Optional
 import humps
 from iterative.config import get_config as _get_config
-from iterative.utils import create_project_path as _create_project_path
+from iterative.service.utils.project_utils import create_project_path as _create_project_path
 from pydantic2ts import generate_typescript_defs
 
 def generate_model(entity_name: str, model_generation_path: Optional[str] = None):

@@ -1,4 +1,4 @@
-from iterative.utils import create_project_path
+from iterative.service.utils.project_utils import create_project_path
 from nosql_yorm import cache as nosql_cache
 from iterative.config import get_config
 
