@@ -1,6 +1,5 @@
 import json
 import os
-import time
 from iterative.api_processing import get_api_routers as _get_api_routers
 from iterative.service.assistant_manager import AssistantManager
 from iterative.service.conversation_manager import ConversationManager
@@ -151,13 +150,6 @@ def get_actions():
             functions.append(function)
             
     return functions
-
-# def run_chat_ui():
-#     """
-#     Run the Streamlit chat application.
-#     """
-#     # Assuming your Streamlit app is in 'streamlit_app.py'
-#     subprocess.run(["streamlit", "run", "streamlit_app.py"])
 
 
 def interactive_session(assistant_id: str = None):

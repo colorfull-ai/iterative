@@ -1,7 +1,6 @@
 import os
 import inspect
 from typing import Dict
-from fastapi import FastAPI
 from iterative.api_processing import get_api_routers
 from iterative.config import get_config
 from iterative.models.action import Action

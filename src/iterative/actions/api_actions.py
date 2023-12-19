@@ -1,22 +1,50 @@
+import ast
 import os
 import textwrap
 import humps
 from logging import getLogger as _getLogger
 from iterative.config import get_config as _get_config
+from iterative.service.utils.project_utils import (
+    get_last_project_root as _get_last_project_root,
+    create_project_path as _create_project_path,
+    get_project_root as _get_project_root,
+)
 from textwrap import dedent as _dedent
 
-from iterative.service.utils.project_utils import create_project_path as _create_project_path
 
 logger = _getLogger(__name__)
 
-def _generate_crud_endpoints(class_name):
-    class_name_snake = humps.decamelize(class_name)  # snake_case
-    class_name_snake = humps.depascalize(class_name_snake)  # snake_case
 
-    return textwrap.dedent(f"""
+def _generate_crud_endpoints(class_name, model_file_path):
+    class_name_snake = humps.depascalize(class_name)  # snake_case
+
+    # Get the last and current project roots
+    last_project_root = _get_last_project_root()
+    current_project_root = _get_project_root()
+    if last_project_root is None or current_project_root is None:
+        raise Exception("No parent '.iterative' project found.")
+
+    # Construct the relative import path from the last project root to the model file path
+    model_relative_path = os.path.relpath(
+        model_file_path, last_project_root
+    ).replace(os.sep, ".")
+
+    # Get the last part of the last_project_root (which is the project's name)
+    last_project_name = os.path.basename(last_project_root)
+
+    # Prepend the project's name to the model_relative_path
+    model_relative_path = f"{last_project_name}.{model_relative_path}"
+
+    # Remove the '.py' extension from the import path
+    model_relative_path = model_relative_path.rsplit('.', 1)[0]
+
+    print(f"model_relative_path: {model_relative_path}")
+
+    return textwrap.dedent(
+        f"""
     from typing import List, Optional
     from fastapi import APIRouter, HTTPException, Query
-    from models.{class_name_snake} import {class_name}
+    from {model_relative_path} import {class_name}
 
     router = APIRouter()
 
@@ -65,40 +93,57 @@ def _generate_crud_endpoints(class_name):
         if not {class_name_snake}s:
             raise HTTPException(status_code=404, detail="{class_name}s not found")
         return {class_name_snake}s
-    """)
-
+    """
+    )
 
 
 def generate_endpoints_for_model(model_name: str):
-    """
-    Generate FastAPI CRUD endpoints for a given model and save them in the 'endpoints' directory.
-
-    """
     model_name_pascal = humps.pascalize(model_name)
     models_path = _create_project_path(_get_config().get("model_generation_path"))
     api_path = _create_project_path(_get_config().get("api_generation_path"))
 
-    # Ensure the 'models' directory exists
     if not os.path.exists(models_path):
         print(f"Models directory {models_path} does not exist.")
         return
-    
+
     os.makedirs(api_path, exist_ok=True)
 
-    model_file_name = f"{model_name_pascal}.py"
-    model_file_path = os.path.join(models_path, model_file_name)
+    # New logic to search for the model in all Python files
+    model_found = False
+    model_file_path = None
+    for root, dirs, files in os.walk(models_path):
+        for file in files:
+            if file.endswith(".py"):
+                file_path = os.path.join(root, file)
+                with open(file_path, "r", encoding="utf-8") as f:
+                    file_content = f.read()
+                    try:
+                        tree = ast.parse(file_content)
+                        for node in ast.walk(tree):
+                            if (
+                                isinstance(node, ast.ClassDef)
+                                and node.name == model_name_pascal
+                            ):
+                                model_found = True
+                                model_file_path = file_path
+                                break
+                    except SyntaxError:
+                        print(f"Syntax error in file: {file_path}")
+                        continue
+        if model_found:
+            break
 
-    # Ensure the model file exists
-    if not os.path.isfile(model_file_path):
-        print(f"Model file {model_file_path} does not exist.")
+    if not model_found:
+        print(f"Model {model_name_pascal} not found in any file under {models_path}.")
         return
 
     # Generate CRUD endpoint script
-    endpoints_script = _generate_crud_endpoints(model_name_pascal)
-    endpoints_file_path = os.path.join(api_path, f"{humps.decamelize(model_name)}_api.py")
+    endpoints_script = _generate_crud_endpoints(model_name_pascal, model_file_path)
+    endpoints_file_path = os.path.join(
+        api_path, f"{humps.decamelize(model_name)}_api.py"
+    )
 
-    # Write the endpoints to the file, overwriting any existing file
-    with open(endpoints_file_path, 'w') as file:
+    with open(endpoints_file_path, "w") as file:
         file.write(_dedent(endpoints_script))
 
     print(f"CRUD endpoints for {model_name} created at {endpoints_file_path}")
@@ -110,5 +155,5 @@ def fetch_web_api_routes():
     routes = []
     for route in web_app.routes:
         routes.append(route.path)
-    print('\n'.join(routes))
+    print("\n".join(routes))
     return routes
