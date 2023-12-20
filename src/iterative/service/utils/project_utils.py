@@ -23,23 +23,6 @@ def load_module_from_path(path: str):
     spec.loader.exec_module(module)
     return module
 
-        
-def print_iterative():
-    ascii_art = """
-                                 ___           ___           ___                                                    ___     
-       ___         ___          /  /\         /  /\         /  /\          ___            ___         ___          /  /\    
-      /__/\       /__/\        /  /::\       /  /::\       /  /::\        /__/\          /__/\       /  /\        /  /::\   
-      \__\:\      \  \:\      /  /:/\:\     /  /:/\:\     /  /:/\:\       \  \:\         \__\:\     /  /:/       /  /:/\:\  
-      /  /::\      \__\:\    /  /::\ \:\   /  /::\ \:\   /  /::\ \:\       \__\:\        /  /::\   /  /:/       /  /::\ \:\ 
-   __/  /:/\/      /  /::\  /__/:/\:\ \:\ /__/:/\:\_\:\ /__/:/\:\_\:\      /  /::\    __/  /:/\/  /__/:/  ___  /__/:/\:\ \:\
-  /__/\/:/~~      /  /:/\:\ \  \:\ \:\_\/ \__\/~|::\/:/ \__\/  \:\/:/     /  /:/\:\  /__/\/:/~~   |  |:| /  /\ \  \:\ \:\_\/
-  \  \::/        /  /:/__\/  \  \:\ \:\      |  |:|::/       \__\::/     /  /:/__\/  \  \::/      |  |:|/  /:/  \  \:\ \:\  
-   \  \:\       /__/:/        \  \:\_\/      |  |:|\/        /  /:/     /__/:/        \  \:\      |__|:|__/:/    \  \:\_\/  
-    \__\/       \__\/          \  \:\        |__|:|~        /__/:/      \__\/          \__\/       \__\::::/      \  \:\    
-                                \__\/         \__\|         \__\/                                      ~~~~        \__\/    
-    """
-    print(ascii_art + " : By Colorfull")
-
 
 def create_project_path(folder_path, *args):
     if folder_path.startswith('/'):
@@ -51,6 +34,10 @@ def create_project_path(folder_path, *args):
 def is_cwd_iterative_project():
     # Ensure the .iterative folder exists
     return os.path.exists(os.path.join(os.getcwd(), ".iterative"))
+
+def is_iterative_project(folder_path):
+    # Ensure the .iterative folder exists
+    return os.path.exists(os.path.join(folder_path, ".iterative"))
 
 def get_project_root():
     """
@@ -106,6 +93,13 @@ def get_last_project_root():
             last_project_root = path
         path = os.path.dirname(path)
     return last_project_root
+
+def get_parent_project_root():
+    """
+    This function returns the greatest parent directory `iterative` project.
+    It starts from the current working directory and moves upwards.
+    """
+    return get_last_project_root()
 
 
 def is_pydantic_model(node, file_path):

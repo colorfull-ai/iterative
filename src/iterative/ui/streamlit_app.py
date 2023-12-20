@@ -5,11 +5,10 @@ from iterative.service.utils.streamlit_utils import find_streamlit_scripts
 from iterative.ui.gpt_chat import main as gpt_chat_main
 from iterative.ui.assistant_chat import main as assistant_chat_main
 
+current_project_root_dir = get_project_root()
+current_project_name = current_project_root_dir.split('/')[-1]
 
-# Get the project root directory
-project_root = get_project_root()
-
-app_mode = st.sidebar.selectbox('Choose the app mode', ['Home', 'ChatGPT Clone', 'Assistant', 'Other Sections'])
+app_mode = st.sidebar.selectbox('Choose the app mode', ['Home', 'ChatGPT Clone', 'Assistant', f'PROJECT: {current_project_name}'])
 
 if app_mode == 'ChatGPT Clone':
     gpt_chat_main()
@@ -17,15 +16,17 @@ if app_mode == 'ChatGPT Clone':
 elif app_mode == 'Assistant':
     assistant_chat_main()
 elif app_mode == 'Home':
-    # Dynamically import Streamlit sections
-    streamlit_scripts = find_streamlit_scripts(project_root)
+    streamlit_scripts = find_streamlit_scripts()
 
-    # Define a routing dictionary
-    sections = streamlit_scripts
+    if not streamlit_scripts:
+        st.write("No sections found.")
+    else:
+        # Define a routing dictionary
+        sections = streamlit_scripts
 
-    # Sidebar for navigation
-    selected_section = st.sidebar.selectbox("Choose a section", list(sections.keys()))
+        # Sidebar for navigation
+        selected_section = st.sidebar.selectbox("Choose a section", list(sections.keys()))
 
-    # Display the chosen section
-    if selected_section in sections:
-        sections[selected_section]()
+        # Display the chosen section
+        if selected_section in sections:
+            sections[selected_section]()

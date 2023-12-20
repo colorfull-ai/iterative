@@ -22,3 +22,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 iterative = "iterative:main"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning:pkg_resources.*:",
+    "ignore::DeprecationWarning:google.rpc.*:"
+]

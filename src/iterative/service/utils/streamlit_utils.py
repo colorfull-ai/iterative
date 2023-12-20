@@ -2,6 +2,8 @@ import importlib
 import os
 import sys
 
+from iterative.service.utils.project_utils import get_project_root
+
 
 def import_main_from_script(file_path):
     module_name = os.path.splitext(os.path.basename(file_path))[0]
@@ -13,7 +15,10 @@ def import_main_from_script(file_path):
     return getattr(module, 'main', None)
 
 
-def find_streamlit_scripts(root_path):
+def find_streamlit_scripts(in_current_project=True):
+    if in_current_project:
+        root_path = get_project_root()
+
     streamlit_scripts = {}
     streamlit_path = os.path.join(root_path, 'service', 'streamlits')
 
