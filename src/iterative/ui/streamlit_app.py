@@ -8,14 +8,20 @@ from iterative.ui.assistant_chat import main as assistant_chat_main
 current_project_root_dir = get_project_root()
 current_project_name = current_project_root_dir.split('/')[-1]
 
-app_mode = st.sidebar.selectbox('Choose the app mode', ['Home', 'ChatGPT Clone', 'Assistant', f'PROJECT: {current_project_name}'])
+iterative_project_name = f'PROJECT: {current_project_name}'
+st.sidebar.image('https://res.cloudinary.com/dzmqies6h/image/upload/v1703100641/DALL_E_2023-12-20_13.30.29_-_Create_a_movie_poster-style_image_titled_Iterative_with_the_subtitle_AI_Framework_._The_background_should_be_a_vibrant_colorful_ink_scape_depicti_baar7u.png')
+# streamlit header logo image instead of sidebar image
+# st.image('https://res.cloudinary.com/dzmqies6h/image/upload/v1703100641/DALL_E_2023-12-20_13.30.29_-_Create_a_movie_poster-style_image_titled_Iterative_with_the_subtitle_AI_Framework_._The_background_should_be_a_vibrant_colorful_ink_scape_depicti_baar7u.png')
+st.sidebar.title('Iterative')
+
+app_mode = st.sidebar.selectbox('Choose the app mode', [iterative_project_name, 'ChatGPT Clone', 'Assistant', ])
 
 if app_mode == 'ChatGPT Clone':
     gpt_chat_main()
 
 elif app_mode == 'Assistant':
     assistant_chat_main()
-elif app_mode == 'Home':
+elif app_mode == iterative_project_name:
     streamlit_scripts = find_streamlit_scripts()
 
     if not streamlit_scripts:
