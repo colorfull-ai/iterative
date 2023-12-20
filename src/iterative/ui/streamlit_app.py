@@ -5,6 +5,7 @@ from iterative.service.utils.streamlit_utils import find_streamlit_scripts
 from iterative.ui.gpt_chat import main as gpt_chat_main
 from iterative.ui.assistant_chat import main as assistant_chat_main
 
+
 # Get the project root directory
 project_root = get_project_root()
 

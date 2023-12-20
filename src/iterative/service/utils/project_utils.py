@@ -2,6 +2,7 @@ import ast
 import sys
 import os
 import importlib.util
+from typing import Dict
 from pydantic import BaseModel
 
 
@@ -124,7 +125,7 @@ def is_pydantic_model(node, file_path):
 
     return False
 
-def find_pydantic_models_in_models_folders(root_path):
+def find_pydantic_models_in_models_folders(root_path) -> Dict[str, str]:
     models = {}
     for root, dirs, files in os.walk(root_path):
         if 'models' in root.split(os.sep):
