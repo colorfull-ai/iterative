@@ -20,7 +20,7 @@ def find_streamlit_scripts(in_current_project=True):
         root_path = get_project_root()
 
     streamlit_scripts = {}
-    streamlit_path = os.path.join(root_path, 'service', 'streamlits')
+    streamlit_path = os.path.join(root_path, 'streamlits')
 
     for root, dirs, files in os.walk(streamlit_path):
         for file in files:
