@@ -2,7 +2,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from iterative.action_processing import get_all_actions
+from iterative.service.utils.action_utils import get_all_actions
 from iterative.config import get_config
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi

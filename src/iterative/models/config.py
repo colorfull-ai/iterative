@@ -47,3 +47,4 @@ class IterativeAppConfig(IterativeModel):
     expose_default_actions_to_cli: Optional[bool] = True
     expose_project_actions_to_cli: Optional[bool] = True
     actions_cap: Optional[int] = 128
+    metadata: Optional[dict] = {}

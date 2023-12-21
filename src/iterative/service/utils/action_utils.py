@@ -1,7 +1,7 @@
 import os
 import inspect
 from typing import Dict
-from iterative.api_processing import get_api_routers
+from iterative.service.utils.api_utils import get_api_routers
 from iterative.config import get_config
 from iterative.models.action import Action
 from iterative.service.utils.project_utils import load_module_from_path
@@ -65,7 +65,7 @@ def get_all_actions(include_project_actions=True, include_package_default_action
         actions.extend(get_package_default_actions())
 
     if include_api_actions:
-        actions.extend(get_api_actions())
+        actions.extend(turn_api_router_into_actions())
 
     all_actions_dict = {}
     for action in actions:
@@ -76,28 +76,29 @@ def get_all_actions(include_project_actions=True, include_package_default_action
     return all_actions_dict
 
 
-def get_api_actions():
+def turn_api_router_into_actions():
     """
     This searches the api folder in the project for FastAPI routers and turns the routes into actions.
     """
     actions = []
-    for router in get_api_routers():
-        for route in router.routes:
-            # Example of creating an Action from a route
-            # You may need to adjust this according to your route structure and requirements
-            action_name = route.name or route.path.replace('/', '_')
-            action_function = route.endpoint
-            action_file = inspect.getfile(route.endpoint)  # File where the function is defined
-            action_script_source = "API"  # This is a placeholder
+    for project_name, router_list in get_api_routers().items():
+        for router_dict in router_list:
+            router = router_dict["router"]
+            for route in router.routes:
+                # Example of creating an Action from a route
+                # You may need to adjust this according to your route structure and requirements
+                action_name = route.name or route.path.replace('/', '_')
+                action_function = route.endpoint
+                action_file = inspect.getfile(route.endpoint)  # File where the function is defined
+                action_script_source = "API"  # This is a placeholder
 
-            action = Action(
-                name=action_name,
-                function=action_function,
-                file=action_file,
-                script_source=action_script_source
-            )
-            actions.append(action)
+                action = Action(
+                    name=action_name,
+                    function=action_function,
+                    file=action_file,
+                    script_source=action_script_source
+                )
+                actions.append(action)
 
-            # Optional print for debugging
 
     return actions

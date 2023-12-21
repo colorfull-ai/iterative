@@ -2,7 +2,7 @@ import json
 import os
 import shutil
 from iterative import get_config as _get_config
-from iterative.api_processing import get_api_routers as _get_api_routers
+from iterative.service.utils.api_utils import get_api_routers as _get_api_routers
 from iterative.models.config import IterativeAppConfig
 from iterative.service.utils.project_utils import create_project_path as _create_project_path
 import typer

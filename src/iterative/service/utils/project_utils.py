@@ -36,26 +36,31 @@ def is_cwd_iterative_project():
     return os.path.exists(os.path.join(os.getcwd(), ".iterative"))
 
 def is_iterative_project(folder_path):
+    if 'templates' in folder_path.split(os.sep):
+        return False
     # Ensure the .iterative folder exists
     return os.path.exists(os.path.join(folder_path, ".iterative"))
 
-def get_project_root():
+def get_project_root(start_path: str = None):
     """
     This function returns the parent directory of the nearest `.iterative` folder. 
-    It starts from the current working directory and moves upwards in the directory tree. 
+    It starts from the provided start_path or the current working directory and moves upwards in the directory tree. 
 
     The function works as follows:
-    1. It gets the current working directory.
+    1. It gets the start_path or the current working directory.
     2. It enters a loop that continues until the root directory ('/') is reached.
     3. In each iteration of the loop, it checks if a `.iterative` folder exists in the current directory.
     4. If such a folder is found, it returns the current directory, which is the parent directory of the `.iterative` folder.
     5. If no `.iterative` folder is found in the current directory, it moves one level up in the directory tree.
     6. If the function reaches the root directory without finding a `.iterative` folder, it returns None.
 
+    Args:
+        start_path (str, optional): The path to start searching from. If not provided, the search starts from the current working directory.
+
     Returns:
         str: The path to the parent directory of the nearest `.iterative` folder, or None if no such folder is found.
     """
-    path = os.getcwd()
+    path = start_path if start_path else os.getcwd()
     while path != '/':
         if os.path.exists(os.path.join(path, ".iterative")):
             return path

@@ -4,11 +4,11 @@ import sys
 from nosql_yorm import NameSpacedCache
 from nosql_yorm.models import set_firestore_client
 from iterative.service.utils.project_utils import get_project_root
-from iterative.api_processing import get_api_routers
+from iterative.service.utils.api_utils import get_api_routers
 from iterative.web import iterative_user_web_app as web_app
 from iterative.cli import iterative_cli_app as cli_app
 
-from iterative.action_processing import get_all_actions
+from iterative.service.utils.action_utils import get_all_actions
 from iterative.cli_app_integration import integrate_actions_into_cli_app
 from iterative.web_app_integration import integrate_actions_into_web_app
 from iterative.server_management import run_web_server, run_ngrok_subprocess
@@ -17,7 +17,7 @@ from iterative.cache import cache
 from iterative.actions.assistant_actions import AssistantManager, ConversationManager, _get_configured_actions, ask_assistant, get_assistant_info
 from iterative.models.iterative import IterativeModel
 from iterative.models.config import IterativeAppConfig
-from iterative.action_processing import get_all_actions
+from iterative.service.utils.action_utils import get_all_actions
 from iterative.actions.assistant_actions import update_assistant_tools_with_actions
 from logging import getLogger
 import logging
@@ -47,8 +47,11 @@ def prep_app():
 
     # Add routers to the web app
     routers = get_api_routers()
-    for router in routers:
-        web_app.include_router(router)
+    logger.info(f"Adding router to web app")
+    for project_name, router_list in routers.items():
+        for router_dict in router_list:
+            router = router_dict["router"]
+            web_app.include_router(router)
 
     update_assistant_tools_with_actions()
 
