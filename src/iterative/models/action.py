@@ -9,8 +9,8 @@ class Action(IterativeModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     name: str
     function: Callable
-    file: str
-    script_source: str
+    file_path: str
+    category: str
 
     # make getters and setters for name, function, file, script_source
     # name
@@ -29,17 +29,17 @@ class Action(IterativeModel):
 
     # file
     def get_file(self):
-        return self.file
+        return self.file_path
     
     def set_file(self, file):
-        self.file = file
+        self.file_path = file
 
     # script_source
-    def get_script_source(self):
-        return self.script_source
+    def get_category(self):
+        return self.category
     
     def set_script_source(self, script_source):
-        self.script_source = script_source
+        self.category = script_source
 
     def to_json(self) -> Dict[str, Any]:
         function_tool = create_function_tool_from_callback(self.name, self.function)
@@ -49,7 +49,7 @@ class Action(IterativeModel):
                 "name": self.get_name(),
                 "file": self.get_file(),
                 "function": function_tool['function'],
-                "script_source": self.get_script_source()
+                "script_source": self.get_category()
             }
         }
     

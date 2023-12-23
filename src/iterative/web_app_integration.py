@@ -4,8 +4,10 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from typing import Callable, List, get_type_hints
 import inspect
 from iterative.models.action import Action
-
 from iterative.service.utils.project_utils import load_module_from_path, snake_case
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 def create_endpoint(func: Callable, name: str):
     router = APIRouter()
@@ -46,7 +48,7 @@ def create_endpoint(func: Callable, name: str):
 def load_routers_from_directory(directory, web_app):
     # Skip if the directory doesn't exist
     if not os.path.exists(directory):
-        print(f"Directory not found: {directory}")
+        logger.info(f"Directory not found: {directory}")
         return
 
     # Search for Python actions in the provided directory and load routers
@@ -64,10 +66,10 @@ def integrate_actions_into_web_app(actions: List[Action], web_app: FastAPI):
     for action in actions:
         snake_name = snake_case(action.get_name())
         router = create_endpoint(action.get_function(), snake_name)
-        script_source = action.get_script_source()
+        category = action.get_category()
         file = action.get_file()
 
         # Determine tags based on script source
-        tag = [f"{script_source}: {file.replace('.py', '')}"] if script_source != "Iterative Default" else ["Iterative Default"]
+        tag = [f"{category}: {file.replace('.py', '')}"] if category != "Iterative Default" else ["Iterative Default"]
 
         web_app.include_router(router, tags=tag)

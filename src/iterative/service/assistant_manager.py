@@ -82,7 +82,7 @@ class AssistantManager:
         # Update the assistant if there are valid attributes to update
         if attrs:
             try:
-                logger.debug(f"Updating assistant {asst_id} with attributes: {attrs.keys()}")
+                logger.info(f"Updating assistant {asst_id} with attributes: {attrs.keys()}")
                 # remove all keys and values where the value is none
                 attrs = {k: v for k, v in attrs.items() if v is not None}
                 assistant = self.client.beta.assistants.update(asst_id, **attrs)

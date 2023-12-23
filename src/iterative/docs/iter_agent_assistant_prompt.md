@@ -372,7 +372,7 @@ def generate_directory_tree(startpath: str = '.') -> str:
                 tree.append(f"{subindent}{f}")
 
     tree_str = '\n'.join(tree)
-    logger.debug(tree_str)
+    logger.info(tree_str)
 
     return tree_str
 

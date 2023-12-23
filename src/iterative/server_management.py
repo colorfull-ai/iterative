@@ -7,6 +7,9 @@ import subprocess
 import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class ChangeHandler(FileSystemEventHandler):
@@ -49,7 +52,7 @@ def run_web_server():
     def restart_uvicorn():
 
         nonlocal uvicorn_process
-        print("Restarting Detected Changes restarting server... ")
+        logger.info("Restarting Detected Changes restarting server... ")
         uvicorn_process.kill()
         uvicorn_process.wait()
 
@@ -58,7 +61,7 @@ def run_web_server():
 
     # Watchdog configuration
     reload_dirs = get_config().get('reload_dirs', [])
-    print(f"Watching directories for changes: {reload_dirs}")
+    logger.info(f"Watching directories for changes: {reload_dirs}")
     # Add the parent directory of this file (iterative package root)
     iterative_package_root = os.path.dirname(script_directory)
     # reload_dirs.append(iterative_package_root)
@@ -67,7 +70,7 @@ def run_web_server():
     observer = Observer()
 
     if get_config().get("reload", False):
-        print("Reload enabled.  Watching directories for changes...")
+        logger.info("Reload enabled.  Watching directories for changes...")
         for directory in reload_dirs:
             observer.schedule(event_handler, directory, recursive=True)
 
@@ -88,7 +91,7 @@ def run_ngrok_setup_script(script_path):
         subprocess.run(["bash", script_path], check=True)
 
         # Wait for ngrok to set up completely (30 seconds)
-        print("Waiting for ngrok to set up...")
+        logger.info("Waiting for ngrok to set up...")
         time.sleep(8)
 
         # Read environment variables from the temp file
@@ -97,9 +100,9 @@ def run_ngrok_setup_script(script_path):
                 key, value = line.strip().split('=', 1)
                 os.environ[key] = value
 
-        print(f"HOST variable set to: {os.environ.get('HOST')}")
-        print("ngrok and environment variables set up successfully.")
+        logger.info(f"HOST variable set to: {os.environ.get('HOST')}")
+        logger.info("ngrok and environment variables set up successfully.")
     except subprocess.CalledProcessError as e:
-        print(f"An error occurred while running the ngrok setup script: {e}")
+        logger.error(f"An error occurred while running the ngrok setup script: {e}")
     except IOError as e:
-        print(f"Error reading environment variables from temp file: {e}")
+        logger.error(f"Error reading environment variables from temp file: {e}")

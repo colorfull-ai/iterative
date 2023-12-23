@@ -72,6 +72,7 @@ def get_api_routers():
 
 def find_api_routers_in_iterative_project():
     project_root = get_project_root()
+    print(f"Project root: {project_root}")
     if project_root:
         return find_api_routers_from_path(project_root)
     else:

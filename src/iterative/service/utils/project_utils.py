@@ -3,7 +3,12 @@ import sys
 import os
 import importlib.util
 from typing import Dict
+from iterative.models.project_file import ProjectFile
 from pydantic import BaseModel
+import yaml
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 def snake_case(s: str) -> str:
@@ -24,16 +29,17 @@ def load_module_from_path(path: str):
     return module
 
 
-def create_project_path(folder_path, *args):
+def resolve_project_folder_path(folder_path: str, parent: bool = False, package: bool = False, *args):
     if folder_path.startswith('/'):
         return os.path.join(folder_path, *args)
     else:
-        return os.path.join(os.getcwd(), folder_path, *args)
+        if parent:
+            return os.path.join(get_parent_project_root(), folder_path, *args)
+        else:
+            if package:
+                return get_project_root(os.path.dirname(os.path.abspath(__file__)))
+            return os.path.join(get_project_root(), folder_path, *args)
     
-
-def is_cwd_iterative_project():
-    # Ensure the .iterative folder exists
-    return os.path.exists(os.path.join(os.getcwd(), ".iterative"))
 
 def is_iterative_project(folder_path):
     if 'templates' in folder_path.split(os.sep):
@@ -65,6 +71,7 @@ def get_project_root(start_path: str = None):
         if os.path.exists(os.path.join(path, ".iterative")):
             return path
         path = os.path.dirname(path)
+    logger.info("No '.iterative' project found.")
     return None
 
 
@@ -75,9 +82,10 @@ def find_all_iterative_projects(start_path):
             iterative_projects.append(root)
     return iterative_projects
 
-def get_last_project_root():
+
+def get_parent_project_root():
     """
-    This function returns the parent directory of the last `.iterative` folder found while moving up the directory tree. 
+    This function returns the greatest parent directory `iterative` project.
     It starts from the current working directory and moves upwards.
 
     The function works as follows:
@@ -98,13 +106,6 @@ def get_last_project_root():
             last_project_root = path
         path = os.path.dirname(path)
     return last_project_root
-
-def get_parent_project_root():
-    """
-    This function returns the greatest parent directory `iterative` project.
-    It starts from the current working directory and moves upwards.
-    """
-    return get_last_project_root()
 
 
 def is_pydantic_model(node, file_path):
@@ -144,3 +145,54 @@ def find_pydantic_models_in_models_folders(root_path) -> Dict[str, str]:
                             continue
     models = dict(sorted(models.items()))
     return models
+
+def read_project_config_file(project_root: str):
+    """
+    This function reads the configuration file from the given project root and returns it.
+    """
+    config_file_path = os.path.join(project_root, ".iterative", "config.yaml")
+
+    with open(config_file_path, "r") as file:
+        config = yaml.safe_load(file)
+
+
+    return config
+
+def get_project_config(project_path: str = None):
+    """
+    This function reads the project configuration from the 'iterative.yml' file and returns it.
+    """
+    project_root = get_project_root(project_path)
+    return read_project_config_file(project_root)
+
+def get_current_project_config():
+    """
+    This function reads the configuration of the current project and returns it.
+    """
+    project_root = get_project_root()
+    return read_project_config_file(project_root)
+
+def get_parent_project_config():
+    """
+    This function reads the configuration of the parent project and returns it.
+    """
+    project_root = get_parent_project_root()
+    return read_project_config_file(project_root)
+
+def is_private_folder(folder_name: str) -> bool:
+    """
+    This function checks if a folder is private, i.e., if it is prefixed with a "." or "_".
+    """
+    return folder_name.startswith('.') or folder_name.startswith('_')
+
+def is_template_folder(folder_name: str) -> bool:
+    """
+    This function checks if a folder is a template folder, i.e., if it is prefixed with a "." or "_".
+    """
+    return folder_name.startswith('templates')
+
+def is_action_file(file_name: str) -> bool:
+    """
+    This function checks if a file is an action file, i.e., if it is prefixed with a "." or "_".
+    """
+    return file_name.endswith(ProjectFile.ACTION_POSTFIX.value)

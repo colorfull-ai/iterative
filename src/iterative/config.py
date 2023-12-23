@@ -25,7 +25,7 @@ class Config:
         try:
             self.config = OmegaConf.create(IterativeAppConfig(**OmegaConf.to_object(user_config)).dict())
         except ValidationError as e:
-            print(f"Validation error in the user configuration: {e}")
+            logger.error(f"Validation error in the user configuration: {e}")
             raise
 
         # Set the merged configuration as the nosql_yorm configuration
@@ -37,7 +37,7 @@ class Config:
         while True:
             possible_config_path = os.path.join(current_dir, ".iterative", 'config.yaml')
             if os.path.exists(possible_config_path):
-                logger.debug(f"Found iterative project")
+                logger.info(f"Found iterative project")
                 return possible_config_path
             new_dir = os.path.dirname(current_dir)
             if new_dir == current_dir:
@@ -85,7 +85,7 @@ class Config:
             validated_config = IterativeAppConfig(**OmegaConf.to_object(self.config))
             self.config = OmegaConf.create(validated_config.dict())
         except ValidationError as e:
-            print(f"Validation error after updating the configuration: {e}")
+            logger.error(f"Validation error after updating the configuration: {e}")
             raise
 
         # Update the nosql_yorm configuration if necessary

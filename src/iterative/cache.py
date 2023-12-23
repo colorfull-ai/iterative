@@ -1,8 +1,8 @@
-from iterative.service.utils.project_utils import create_project_path
+from iterative.service.utils.project_utils import resolve_project_folder_path
+from iterative.models.project_folder import ProjectFolder
 from nosql_yorm import cache as nosql_cache
-from iterative.config import get_config
 
-data_path = create_project_path(get_config().get("data_path"))
+data_path = resolve_project_folder_path(ProjectFolder.DATA.value)
 
 nosql_cache.set_output_dir(data_path)
 cache = nosql_cache

@@ -18,7 +18,7 @@ def get_openapi_schema() -> Dict:
     """
     from iterative import web_app
 
-    print(web_app.openapi())
+    logger.info(web_app.openapi())
 
     return web_app.openapi()
 
@@ -46,7 +46,7 @@ def generate_directory_tree(startpath: str = '.') -> str:
                 tree.append(f"{subindent}{f}")
 
     tree_str = '\n'.join(tree)
-    print(tree_str)
+    logger.info(tree_str)
 
     return tree_str
 
@@ -85,7 +85,7 @@ def get_local_db_metrics() -> str:
             })
     metrics = json.dumps(metrics, indent=4)
 
-    print(metrics)
+    logger.info(metrics)
 
     # Convert the metrics dictionary to a JSON string
     return metrics

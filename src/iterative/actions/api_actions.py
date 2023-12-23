@@ -5,8 +5,8 @@ import humps
 from logging import getLogger as _getLogger
 from iterative.config import get_config as _get_config
 from iterative.service.utils.project_utils import (
-    get_last_project_root as _get_last_project_root,
-    create_project_path as _create_project_path,
+    get_parent_project_root as _get_parent_project_root,
+    resolve_project_folder_path as _resolve_project_folder_path,
     get_project_root as _get_project_root,
 )
 from textwrap import dedent as _dedent
@@ -14,37 +14,43 @@ from textwrap import dedent as _dedent
 
 logger = _getLogger(__name__)
 
+def create_relative_import_path(model_file_path: str, parent_project_root: str):
+    """
+    This function creates a relative import path from the parent project root to the model file path.
+    """
+    # Construct the relative import path from the last project root to the model file path
+    relative_path_from_parent_to_model = os.path.relpath(
+        model_file_path, parent_project_root
+    ).replace(os.sep, ".")
+
+    # Get the last part of the last_project_root (which is the project's name)
+    last_project_name = os.path.basename(parent_project_root)
+
+    # Prepend the project's name to the model_relative_path
+    relative_path_from_parent_to_model = f"{last_project_name}.{relative_path_from_parent_to_model}"
+
+    # Remove the '.py' extension from the import path
+    relative_path_from_parent_to_model = relative_path_from_parent_to_model.rsplit('.', 1)[0]
+
+    return relative_path_from_parent_to_model
 
 def _generate_crud_endpoints(class_name, model_file_path):
     class_name_snake = humps.depascalize(class_name)  # snake_case
 
     # Get the last and current project roots
-    last_project_root = _get_last_project_root()
+    parent_project_root = _get_parent_project_root()
     current_project_root = _get_project_root()
-    if last_project_root is None or current_project_root is None:
+    if parent_project_root is None or current_project_root is None:
         raise Exception("No parent '.iterative' project found.")
 
-    # Construct the relative import path from the last project root to the model file path
-    model_relative_path = os.path.relpath(
-        model_file_path, last_project_root
-    ).replace(os.sep, ".")
+    relative_path_from_parent_to_model = create_relative_import_path(model_file_path, parent_project_root)
 
-    # Get the last part of the last_project_root (which is the project's name)
-    last_project_name = os.path.basename(last_project_root)
-
-    # Prepend the project's name to the model_relative_path
-    model_relative_path = f"{last_project_name}.{model_relative_path}"
-
-    # Remove the '.py' extension from the import path
-    model_relative_path = model_relative_path.rsplit('.', 1)[0]
-
-    print(f"model_relative_path: {model_relative_path}")
 
     return textwrap.dedent(
         f"""
     from typing import List, Optional
     from fastapi import APIRouter, HTTPException, Query
-    from {model_relative_path} import {class_name}
+    from {relative_path_from_parent_to_model} import {class_name}
 
     router = APIRouter()
 
@@ -99,11 +105,11 @@ def _generate_crud_endpoints(class_name, model_file_path):
 
 def generate_endpoints_for_model(model_name: str):
     model_name_pascal = humps.pascalize(model_name)
-    models_path = _create_project_path(_get_config().get("model_generation_path"))
-    api_path = _create_project_path(_get_config().get("api_generation_path"))
+    models_path = _resolve_project_folder_path(_get_config().get("model_generation_path"))
+    api_path = _resolve_project_folder_path(_get_config().get("api_generation_path"))
 
     if not os.path.exists(models_path):
-        print(f"Models directory {models_path} does not exist.")
+        logger.info(f"Models directory {models_path} does not exist.")
         return
 
     os.makedirs(api_path, exist_ok=True)
@@ -128,13 +134,13 @@ def generate_endpoints_for_model(model_name: str):
                                 model_file_path = file_path
                                 break
                     except SyntaxError:
-                        print(f"Syntax error in file: {file_path}")
+                        logger.error(f"Syntax error in file: {file_path}")
                         continue
         if model_found:
             break
 
     if not model_found:
-        print(f"Model {model_name_pascal} not found in any file under {models_path}.")
+        logger.error(f"Model {model_name_pascal} not found in any file under {models_path}.")
         return
 
     # Generate CRUD endpoint script
@@ -146,7 +152,7 @@ def generate_endpoints_for_model(model_name: str):
     with open(endpoints_file_path, "w") as file:
         file.write(_dedent(endpoints_script))
 
-    print(f"CRUD endpoints for {model_name} created at {endpoints_file_path}")
+    logger.info(f"CRUD endpoints for {model_name} created at {endpoints_file_path}")
 
 
 def fetch_web_api_routes():
@@ -155,5 +161,5 @@ def fetch_web_api_routes():
     routes = []
     for route in web_app.routes:
         routes.append(route.path)
-    print("\n".join(routes))
+    logger.info("\n".join(routes))
     return routes

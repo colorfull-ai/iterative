@@ -18,4 +18,3 @@ def test_router_finder(router_finder, expected_endpoint, expected_file_name):
     # check that the router is in the correct file, split the file path to the file name
     file_names = [router_dict["file_path"].split('/')[-1] for router_list in routers_dict.values() for router_dict in router_list]
     assert expected_file_name in file_names
-   

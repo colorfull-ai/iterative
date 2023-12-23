@@ -69,7 +69,7 @@ def run_tests(test_name: Optional[str] = None):
 
     # Check if the tests directory exists
     if not os.path.exists(tests_dir):
-        print("Tests directory does not exist in the current working directory.")
+        logger.error("Tests directory does not exist in the current working directory.")
         return
 
     # Prepare the pytest command
@@ -77,7 +77,7 @@ def run_tests(test_name: Optional[str] = None):
         # Run a specific test file
         test_file = os.path.join(tests_dir, test_name + '.py')
         if not os.path.exists(test_file):
-            print(f"Test file '{test_name}.py' does not exist in the tests directory.")
+            logger.error(f"Test file '{test_name}.py' does not exist in the tests directory.")
             return
         pytest_command = ["pytest", test_file]
     else:
@@ -87,9 +87,9 @@ def run_tests(test_name: Optional[str] = None):
     # Run pytest
     try:
         result = subprocess.run(pytest_command, check=True, capture_output=True, text=True)
-        print(result.stdout)
+        logger.info(result.stdout)
     except subprocess.CalledProcessError as e:
-        print("Error while running pytest:")
-        print(e.output)
+        logger.error("Error while running pytest:")
+        logger.error(e.output)
 
 
