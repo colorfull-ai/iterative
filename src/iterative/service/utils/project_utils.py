@@ -38,6 +38,9 @@ def resolve_project_folder_path(folder_path: str, parent: bool = False, package:
         else:
             if package:
                 return get_project_root(os.path.dirname(os.path.abspath(__file__)))
+            project_root = get_project_root()
+            if not project_root:
+                return os.path.join(folder_path, *args)
             return os.path.join(get_project_root(), folder_path, *args)
     
 

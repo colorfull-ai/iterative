@@ -1,0 +1,16 @@
+docs_dir: /Users/bgarrard/Documents/custominstallations/iterative/src/iterative/docs
+nav:
+- Example goal: example_goal.md
+- Ai iterative assistant chain scenario: ai_iterative_assistant_chain_scenario.md
+- Ai action system: ai_action_system.md
+- Iter agent game prompt: iter_agent_game_prompt.md
+- Unit tests doc: unit_tests_doc.md
+- Index: index.md
+- Iter agent assistant prompt: iter_agent_assistant_prompt.md
+- Execute action calls: execute_action_calls.md
+- Nosql yorm: nosql_yorm.md
+- Frontend nextjs project structure: frontend_nextjs_project_structure.md
+- Api errors: api_errors.md
+site_name: iterative Documentation
+theme:
+  name: material

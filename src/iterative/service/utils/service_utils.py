@@ -5,6 +5,9 @@ import ast
 from iterative.models.project_folder import ProjectFolder
 from iterative.service.utils.project_utils import get_parent_project_root, get_project_root, is_iterative_project
 import yaml
+from logging import getLogger 
+
+logger = getLogger(__name__)
 
 def find_project_service_functions(service_path):
     """
@@ -46,7 +49,7 @@ def find_project_service_functions(service_path):
                 full_nested_path = os.path.join(service_path, nested_service_path)
                 add_functions_from_path(full_nested_path)
         else:
-            print(f"No config.yaml found in {service_path}. Using default service path.")
+            logger.info(f"No config.yaml found in {service_path}. Using default service path.")
             add_functions_from_path(service_path)
     else:
         print(f"{service_path} is not an iterative project. Using default service path.")

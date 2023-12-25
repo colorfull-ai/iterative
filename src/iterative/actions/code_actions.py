@@ -3,6 +3,10 @@ import subprocess
 from typing import List, Optional
 from logging import getLogger as _getLogger
 
+import pytest
+
+from iterative.service.utils.project_utils import get_project_root
+
 logger = _getLogger(__name__)
 
 def get_latest_updated_files(dir_path: str, num_files: int = 5) -> List[str]:
@@ -51,6 +55,7 @@ def get_code_dir_context_similarity(dir_path: str) -> str:
     contents = read_files(latest_files)
     return contents
 
+
 def run_tests(test_name: Optional[str] = None):
     """
     Run pytest in the tests directory of the current working directory.
@@ -64,8 +69,9 @@ def run_tests(test_name: Optional[str] = None):
     """
     logger.info("SETTING TEST_MODE ENVIRONMENT VARIABLE TO TRUE")
     os.environ["TEST_MODE"] = "True"
+    project_root = get_project_root(os.getcwd())
     # Define the path to the tests directory
-    tests_dir = os.path.join(os.getcwd(), 'tests')
+    tests_dir = os.path.join(project_root, 'tests')
 
     # Check if the tests directory exists
     if not os.path.exists(tests_dir):
@@ -79,17 +85,8 @@ def run_tests(test_name: Optional[str] = None):
         if not os.path.exists(test_file):
             logger.error(f"Test file '{test_name}.py' does not exist in the tests directory.")
             return
-        pytest_command = ["pytest", test_file]
+        pytest.main([test_file])
     else:
         # Run all tests
-        pytest_command = ["pytest", tests_dir]
-
-    # Run pytest
-    try:
-        result = subprocess.run(pytest_command, check=True, capture_output=True, text=True)
-        logger.info(result.stdout)
-    except subprocess.CalledProcessError as e:
-        logger.error("Error while running pytest:")
-        logger.error(e.output)
-
+        pytest.main([tests_dir])
 
