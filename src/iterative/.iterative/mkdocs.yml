@@ -13,4 +13,5 @@ nav:
 - Api errors: api_errors.md
 site_name: iterative Documentation
 theme:
+  custom_dir: overrides
   name: material

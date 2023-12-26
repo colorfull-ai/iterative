@@ -199,3 +199,12 @@ def is_action_file(file_name: str) -> bool:
     This function checks if a file is an action file, i.e., if it is prefixed with a "." or "_".
     """
     return file_name.endswith(ProjectFile.ACTION_POSTFIX.value)
+
+def get_project_name(project_path: str = None):
+    """
+    This function returns the name of the project.
+    """
+    project_root = get_project_root(project_path)
+    if project_root is None:
+        return None
+    return os.path.basename(project_root)

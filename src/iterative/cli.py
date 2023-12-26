@@ -29,7 +29,7 @@ def serve_docs(port: str = typer.Option("4500", help="The port to serve the docs
     Serve the documentation using MkDocs with the project's configuration.
 
     Args:
-        port (str): The port to serve the docs on. Defaults to "8000".
+        port (str): The port to serve the docs on. Defaults to "4500".
     """
     # Get the root directory of the project
     project_root = get_project_root(os.getcwd())
@@ -37,8 +37,8 @@ def serve_docs(port: str = typer.Option("4500", help="The port to serve the docs
         typer.echo("Error: Could not find the root of the iterative project.")
         raise typer.Exit(code=1)
 
-    # Generate or update the mkdocs.yml configuration for the project
-    doc_utils.update_mkdocs_config_for_project(project_root)
+    # Generate or update the mkdocs.yml configuration for all projects
+    doc_utils.update_all_mkdocs_configs(project_root)
 
     # Path to the mkdocs configuration file within the .iterative directory
     mkdocs_config_path = os.path.join(project_root, '.iterative', 'mkdocs.yml')
@@ -50,4 +50,3 @@ def serve_docs(port: str = typer.Option("4500", help="The port to serve the docs
 
     # Run the mkdocs serve command with the project's configuration
     subprocess.run(["mkdocs", "serve", "-f", mkdocs_config_path, "--dev-addr", f"0.0.0.0:{port}"])
-
