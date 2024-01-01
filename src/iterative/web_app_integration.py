@@ -4,6 +4,7 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from typing import Callable, List, get_type_hints
 import inspect
 from iterative.models.action import Action
+from iterative.service.utils.api_utils import find_api_routers_in_parent_project
 from iterative.service.utils.project_utils import load_module_from_path, snake_case
 from logging import getLogger
 
@@ -73,3 +74,19 @@ def integrate_actions_into_web_app(actions: List[Action], web_app: FastAPI):
         tag = [f"{category}: {file.replace('.py', '')}"] if category != "Iterative Default" else ["Iterative Default"]
 
         web_app.include_router(router, tags=tag)
+
+
+def add_routers_to_web_app(web_app: FastAPI):
+    """
+    Adds routers to the web app.
+
+    Args:
+        web_app: The FastAPI application to which routers will be added.
+    """
+    routers = find_api_routers_in_parent_project()
+    logger.info(f"Adding router to web app")
+    for project_name, router_list in routers.items():
+        for router_dict in router_list:
+            router = router_dict["router"]
+            # Set the tags parameter to a unique value for each router
+            web_app.include_router(router, tags=[f"{project_name}"])

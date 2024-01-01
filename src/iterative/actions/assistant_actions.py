@@ -1,6 +1,6 @@
 import json
 import os
-from iterative.service.utils.api_utils import get_api_routers as _get_api_routers
+from iterative.service.utils.api_utils import find_api_routers_in_parent_project as _find_api_routers_in_parent_project
 from iterative.service.assistant_manager import AssistantManager
 from iterative.service.conversation_manager import ConversationManager
 from iterative.service.utils.project_utils import  is_iterative_project
@@ -105,7 +105,7 @@ def get_actions():
 
     if _get_config().get("let_ai_use_apis"):
         # Add routers to the web app
-        routers = _get_api_routers()
+        routers = _find_api_routers_in_parent_project()
         for router in routers:
             dummy_app.include_router(router)
 

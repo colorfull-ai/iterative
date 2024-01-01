@@ -63,8 +63,6 @@ def run_web_server():
     reload_dirs = get_config().get('reload_dirs', [])
     logger.info(f"Watching directories for changes: {reload_dirs}")
     # Add the parent directory of this file (iterative package root)
-    iterative_package_root = os.path.dirname(script_directory)
-    # reload_dirs.append(iterative_package_root)
 
     event_handler = ChangeHandler(restart_uvicorn)
     observer = Observer()

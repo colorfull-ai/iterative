@@ -1,11 +1,11 @@
 
-from iterative.service.utils.api_utils import find_api_routers_in_iterative_project, find_api_routers_in_parent_project, get_api_routers
+from iterative.service.utils.api_utils import find_api_routers_in_iterative_project, find_api_routers_in_parent_project, find_api_routers_in_parent_project
 import pytest
 
 @pytest.mark.parametrize("router_finder,expected_endpoint,expected_file_name", [
     (find_api_routers_in_iterative_project, '/health', 'health.py'),
     (find_api_routers_in_parent_project, '/health', 'health.py'),
-    (get_api_routers, '/health', 'health.py')
+    (find_api_routers_in_parent_project, '/health', 'health.py')
 ])
 def test_router_finder(router_finder, expected_endpoint, expected_file_name):
     routers_dict = router_finder()

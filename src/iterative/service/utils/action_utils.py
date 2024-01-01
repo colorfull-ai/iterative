@@ -12,7 +12,7 @@ from iterative.service.utils.project_utils import (
 )
 from iterative.service.utils.api_utils import (
     find_api_routers_in_iterative_project,
-    get_api_routers,
+    find_api_routers_in_parent_project,
 )
 from iterative.models.action import Action
 from iterative.service.utils.project_utils import (
@@ -210,4 +210,4 @@ def turn_parent_routers_into_actions():
     """
     This function searches the api folder in the parent project for FastAPI routers and turns the routes into actions.
     """
-    return _turn_routers_dict_into_actions(get_api_routers())
+    return _turn_routers_dict_into_actions(find_api_routers_in_parent_project())

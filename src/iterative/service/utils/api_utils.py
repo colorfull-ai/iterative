@@ -1,7 +1,6 @@
 from collections import defaultdict
 import os
 import inspect
-from aiohttp_retry import Dict
 import yaml
 from fastapi import APIRouter
 from iterative.service.utils.project_utils import get_parent_project_root, get_project_root, is_iterative_project, load_module_from_path
@@ -36,6 +35,8 @@ def find_api_routers_from_path(start_path: str, file_name: str = None):
 
                     for _, obj in inspect.getmembers(module):
                         if isinstance(obj, APIRouter):
+                            # Check if the router has tags, if not, add a default tag
+                            obj.tags = [f'{project_name}']
                             routers_dict[project_name].append({
                                 "file_path": full_path,
                                 "project_name": project_name,
@@ -62,17 +63,9 @@ def find_api_routers_from_path(start_path: str, file_name: str = None):
     return routers_dict
 
 
-def get_api_routers():
-    """
-    Finds all FastAPI routers in the project, including those in the 'apps' subdirectories.
-    """
-    routers = find_api_routers_in_parent_project()
-    return routers
-
-
 def find_api_routers_in_iterative_project():
     project_root = get_project_root()
-    print(f"Project root: {project_root}")
+    logger.info(f"Project root: {project_root}")
     if project_root:
         return find_api_routers_from_path(project_root)
     else:
@@ -82,11 +75,11 @@ def find_api_routers_in_iterative_project():
 
 def find_api_routers_in_parent_project():
     parent_project_root = get_parent_project_root()
-    print(f"Parent project root: {parent_project_root}")
+    logger.info(f"Parent project root: {parent_project_root}")
     if parent_project_root:
         return find_api_routers_from_path(parent_project_root)
     else:
-        print("No .iterative project found in the current directory tree.")
+        logger.warning("No .iterative project found in the current directory tree.")
         return {}
 
 
