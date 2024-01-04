@@ -104,10 +104,13 @@ def get_parent_project_root():
     """
     path = os.getcwd()
     last_project_root = None
-    while path != '/':
+    while True:
         if os.path.exists(os.path.join(path, ".iterative")):
             last_project_root = path
-        path = os.path.dirname(path)
+        parent_path = os.path.dirname(path)
+        if path == parent_path:  # We've reached the root directory
+            break
+        path = parent_path
     return last_project_root
 
 
