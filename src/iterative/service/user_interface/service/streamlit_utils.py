@@ -2,7 +2,7 @@ import importlib
 import os
 import sys
 
-from iterative.service.utils.project_utils import get_project_root
+from iterative.service.project_management.service.project_utils import get_project_root
 
 
 def import_main_from_script(file_path):
