@@ -2,8 +2,8 @@ import os
 import subprocess
 from iterative.server_management import run_web_server
 import typer
-from iterative.service.utils import doc_utils
-from iterative.service.utils.project_utils import get_project_root
+from iterative.service.doc_management.service import doc_utils
+from iterative.service.project_management.service.project_utils import get_project_root
 
 iterative_cli_app = typer.Typer()
 

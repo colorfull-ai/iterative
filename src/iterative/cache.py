@@ -1,5 +1,5 @@
-from iterative.service.utils.project_utils import resolve_project_folder_path
-from iterative.models.project_folder import ProjectFolder
+from iterative.service.project_management.service.project_utils import resolve_project_folder_path
+from iterative.service.project_management.models.project_models import ProjectFolder
 from nosql_yorm import cache as nosql_cache
 
 data_path = resolve_project_folder_path(ProjectFolder.DATA.value)
