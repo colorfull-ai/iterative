@@ -2,11 +2,9 @@
 import os
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from iterative.service.utils.action_utils import get_all_actions
 from iterative.config import get_config
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-# from iterative.web_app_integration import integrate_actions_into_web_app
 from logging import getLogger
 
 logger = getLogger(__name__)

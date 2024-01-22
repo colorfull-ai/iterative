@@ -1,5 +1,5 @@
 import os
-from iterative.models.config import IterativeAppConfig
+from iterative.service.model_management.models.iterative import IterativeAppConfig
 from omegaconf import OmegaConf
 from nosql_yorm.config import Config as NosqlYormConfig, set_config as set_nosql_yorm_config
 from pydantic import ValidationError

@@ -3,9 +3,9 @@ import os
 from fastapi import APIRouter, FastAPI, HTTPException
 from typing import Callable, List, get_type_hints
 import inspect
-from iterative.models.action import Action
-from iterative.service.utils.api_utils import find_api_routers_in_parent_project
-from iterative.service.utils.project_utils import load_module_from_path, snake_case
+from iterative.service.action_management.models.action import Action
+from iterative.service.api_management.service.api_utils import find_api_routers_in_parent_project
+from iterative.service.project_management.service.project_utils import load_module_from_path, snake_case
 from logging import getLogger
 
 logger = getLogger(__name__)
