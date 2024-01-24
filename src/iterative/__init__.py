@@ -55,7 +55,7 @@ def main():
     prep_app()
     if len(sys.argv) == 1:
         # No arguments provided, show help by running the script with '--help'
-        subprocess.run(['python', __file__, '--help'])
+        subprocess.run(['iterative', '--help'])
     else:
         cli_app()
 
