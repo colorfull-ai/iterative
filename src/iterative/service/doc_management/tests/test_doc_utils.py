@@ -1,6 +1,6 @@
 import pytest
 import yaml
-from iterative.service.utils import doc_utils
+from iterative.service.doc_management.service import doc_utils
 
 # Define the markdown files to be created for testing
 markdown_files = [
@@ -13,7 +13,6 @@ markdown_files = [
     'index.md',
     'iter_agent_assistant_prompt.md',
     'iter_agent_game_prompt.md',
-    'nosql_yorm.md',
     'unit_tests_doc.md'
 ]
 

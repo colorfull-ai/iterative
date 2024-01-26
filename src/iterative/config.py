@@ -1,7 +1,6 @@
 import os
 from iterative.service.model_management.models.iterative import IterativeAppConfig
 from omegaconf import OmegaConf
-from nosql_yorm.config import Config as NosqlYormConfig, set_config as set_nosql_yorm_config
 from pydantic import ValidationError
 from logging import getLogger
 
@@ -12,24 +11,20 @@ class Config:
     def __init__(self,  merge_config=True):
         user_config_path = self.find_iterative_config()
         default_config = OmegaConf.create(IterativeAppConfig().dict())
-        nosql_yorm_config = NosqlYormConfig()
 
         # Load and validate the user configuration if provided
         if user_config_path and os.path.exists(user_config_path):
-            user_config = OmegaConf.merge(nosql_yorm_config.config,  default_config,  OmegaConf.load(user_config_path))
+            user_config = OmegaConf.merge(default_config,  OmegaConf.load(user_config_path))
 
 
         else:
-            user_config = OmegaConf.merge(nosql_yorm_config.config, default_config)
+            user_config = OmegaConf.merge(default_config)
 
         try:
             self.config = OmegaConf.create(IterativeAppConfig(**OmegaConf.to_object(user_config)).dict())
         except ValidationError as e:
             logger.error(f"Validation error in the user configuration: {e}")
             raise
-
-        # Set the merged configuration as the nosql_yorm configuration
-        set_nosql_yorm_config(self)
 
         
     def find_iterative_config(self):
@@ -61,7 +56,6 @@ class Config:
         if not isinstance(other_config, Config):
             raise ValueError("other_config must be an instance of Config")
         self.config = OmegaConf.merge(self.config, other_config.config)
-        set_nosql_yorm_config(self)
         return self
     
     def set(self, key, value):
@@ -87,9 +81,6 @@ class Config:
         except ValidationError as e:
             logger.error(f"Validation error after updating the configuration: {e}")
             raise
-
-        # Update the nosql_yorm configuration if necessary
-        set_nosql_yorm_config(self)
 
 
 # Global shared configuration instance

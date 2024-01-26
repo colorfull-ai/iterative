@@ -1,10 +1,11 @@
-from nosql_yorm.models import BaseFirebaseModel
 from enum import Enum
 from typing import Optional
 import logging
 
+from pydantic import BaseModel
 
-class IterativeModel(BaseFirebaseModel):
+
+class IterativeModel(BaseModel):
     ...
 
 
