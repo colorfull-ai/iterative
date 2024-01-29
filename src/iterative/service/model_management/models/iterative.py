@@ -55,3 +55,4 @@ class IterativeAppConfig(IterativeModel):
     expose_project_actions_to_cli: Optional[bool] = True
     actions_cap: Optional[int] = 128
     metadata: Optional[dict] = {}
+    swagger_ui_nested_path: Optional[str] = ""
