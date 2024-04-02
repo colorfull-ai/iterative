@@ -70,13 +70,11 @@ __all__ = [
     "set_config",
     "logging",
     "package_logging",  # Only if you have custom logging functionality in your package
-    "cache",
     "IterativeModel",
     "run_ngrok_subprocess",
     "get_config",
     "ConversationManager",
     "get_all_actions",
-    "NameSpacedCache",
     "get_project_root",
     "IterativeAppConfig",
 ]
