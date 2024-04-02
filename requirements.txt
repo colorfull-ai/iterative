@@ -31,7 +31,6 @@ iniconfig==2.0.0
 markdown-it-py==3.0.0
 mdurl==0.1.2
 msgpack==1.0.7
--e git+https://github.com/colorfull-ai/nosql_yorm.git@d11fcac16272dbb34f8f986d605cac767aba3f85#egg=nosql_yorm
 omegaconf==2.3.0
 packaging==23.2
 pluggy==1.3.0
