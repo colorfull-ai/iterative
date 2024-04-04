@@ -13,7 +13,7 @@ more-itertools==10.2.0
 omegaconf==2.3.0
 packaging==24.0
 pluggy==1.4.0
-pydantic==1.10.14
+pydantic==2.6.4
 Pygments==2.17.2
 pyhumps==3.8.0
 pytest==8.1.1
@@ -31,4 +31,3 @@ typing_extensions==4.10.0
 uvicorn==0.29.0
 watchdog==4.0.0
 -e .
--e git+https://github.com/colorfull-ai/iterative.git#egg=iterative

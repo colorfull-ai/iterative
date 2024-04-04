@@ -7,7 +7,7 @@ packages = [{ from = "src", include = "iterative" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pydantic = "^1.8.2"
+pydantic = "^2.6.4"
 inflect = "^7.0.0"
 
 [tool.poetry.dev-dependencies]
