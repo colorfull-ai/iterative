@@ -11,7 +11,7 @@ from iterative.config import Config, set_config, get_config
 
 from iterative.service.model_management.models.iterative import IterativeModel, IterativeAppConfig
 from iterative.service.action_management.service.action_utils import get_all_actions, get_configured_actions
-
+from iterative.service.api_management.service import api_utils
 
 from logging import getLogger
 import logging
@@ -77,6 +77,7 @@ __all__ = [
     "get_all_actions",
     "get_project_root",
     "IterativeAppConfig",
+    "api_utils",
 ]
 
 if __name__ == "__main__":
