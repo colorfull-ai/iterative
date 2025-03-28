@@ -5,7 +5,12 @@ import typer
 from iterative.service.doc_management.service import doc_utils
 from iterative.service.project_management.service.project_utils import get_project_root
 
-iterative_cli_app = typer.Typer()
+iterative_cli_app = typer.Typer(
+    name="iterative",
+    help="This is a CLI app for managing iterative tasks.",
+    add_completion=True,
+    add_help_option=True,
+)
 
 @iterative_cli_app.command()
 def start_server():

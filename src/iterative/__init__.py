@@ -1,8 +1,6 @@
 import subprocess
 import sys
 
-from nosql_yorm import NameSpacedCache
-from nosql_yorm.models import set_firestore_client
 from iterative.service.project_management.service.project_utils import get_project_root
 from iterative.web import iterative_user_web_app as web_app
 from iterative.cli import iterative_cli_app as cli_app
@@ -10,11 +8,10 @@ from iterative.cli_app_integration import integrate_actions_into_cli_app
 from iterative.web_app_integration import add_routers_to_web_app, integrate_actions_into_web_app
 from iterative.server_management import run_web_server, run_ngrok_subprocess
 from iterative.config import Config, set_config, get_config
-from iterative.cache import cache
 
 from iterative.service.model_management.models.iterative import IterativeModel, IterativeAppConfig
 from iterative.service.action_management.service.action_utils import get_all_actions, get_configured_actions
-
+from iterative.service.api_management.service import api_utils
 
 from logging import getLogger
 import logging
@@ -55,7 +52,7 @@ def main():
     prep_app()
     if len(sys.argv) == 1:
         # No arguments provided, show help by running the script with '--help'
-        subprocess.run(['python', __file__, '--help'])
+        subprocess.run(['iterative', '--help'])
     else:
         cli_app()
 
@@ -73,16 +70,14 @@ __all__ = [
     "set_config",
     "logging",
     "package_logging",  # Only if you have custom logging functionality in your package
-    "cache",
     "IterativeModel",
     "run_ngrok_subprocess",
     "get_config",
     "ConversationManager",
     "get_all_actions",
-    "NameSpacedCache",
-    "set_firestore_client",
     "get_project_root",
     "IterativeAppConfig",
+    "api_utils",
 ]
 
 if __name__ == "__main__":

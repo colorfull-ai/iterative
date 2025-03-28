@@ -1,10 +1,11 @@
-from nosql_yorm.models import BaseFirebaseModel
 from enum import Enum
 from typing import Optional
 import logging
 
+from pydantic import BaseModel
 
-class IterativeModel(BaseFirebaseModel):
+
+class IterativeModel(BaseModel):
     ...
 
 
@@ -54,3 +55,4 @@ class IterativeAppConfig(IterativeModel):
     expose_project_actions_to_cli: Optional[bool] = True
     actions_cap: Optional[int] = 128
     metadata: Optional[dict] = {}
+    swagger_ui_nested_path: Optional[str] = ""

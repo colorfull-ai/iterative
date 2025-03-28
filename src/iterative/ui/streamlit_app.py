@@ -1,7 +1,7 @@
 # Main Streamlit Interface
 import streamlit as st
 from iterative.service.project_management.service.project_utils import get_project_root
-from iterative.service.utils.streamlit_utils import find_streamlit_scripts
+from iterative.service.user_interface.service.streamlit_utils import find_streamlit_scripts
 from iterative.ui.gpt_chat import main as gpt_chat_main
 
 current_project_root_dir = get_project_root()

@@ -1,0 +1,12 @@
+read_write_to_cache: true
+reload: true
+
+persist_cache_as_db: false
+run_ngrok: true
+fastapi_port: 8000
+fastapi_host: "0.0.0.0"
+
+actions_search_path: "actions"  
+model_generation_path: "models"
+api_generation_path: "api"
+tests_path: "tests"
