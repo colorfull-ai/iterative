@@ -1,13 +1,12 @@
 import json
 import os
+from iterative.service.service_management.service.json_encoder import CustomEncoder
 from pydantic import BaseModel
 import importlib.util
 import sys
 
-from colorfull.service.json_utils import CustomEncoder
-
-
 import logging
+
 
 logger = logging.getLogger(__name__)
 
