@@ -1,0 +1,75 @@
+name: Publish Python Package
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - '.github/**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # This is needed to get all tags for versioning
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Configure Poetry
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Get previous version
+        id: get_version
+        run: |
+          echo "CURRENT_VERSION=$(poetry version -s)" >> $GITHUB_ENV
+
+      - name: Update version (patch)
+        run: poetry version patch
+
+      - name: Get new version
+        id: new_version
+        run: |
+          echo "NEW_VERSION=$(poetry version -s)" >> $GITHUB_ENV
+
+      - name: Build and publish
+        run: |
+          poetry build
+          poetry publish
+
+      - name: Create Git tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag v${{ env.NEW_VERSION }}
+          git push origin v${{ env.NEW_VERSION }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.NEW_VERSION }}
+          name: Release v${{ env.NEW_VERSION }}
+          body: |
+            Automated release for version ${{ env.NEW_VERSION }}
+            
+            Changes in this version:
+            - Automated release from master branch
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
