@@ -9,16 +9,16 @@ logger = getLogger(__name__)
 
 class Config:
     def __init__(self,  merge_config=True):
-        user_config_path = self.find_iterative_config()
-        default_config = OmegaConf.create(IterativeAppConfig().dict())
+        self.user_config_path = self.find_iterative_config()
+        self.default_config = OmegaConf.create(IterativeAppConfig().dict())
 
         # Load and validate the user configuration if provided
-        if user_config_path and os.path.exists(user_config_path):
-            user_config = OmegaConf.merge(default_config,  OmegaConf.load(user_config_path))
+        if self.user_config_path and os.path.exists(self.user_config_path):
+            user_config = OmegaConf.merge(self.default_config,  OmegaConf.load(self.user_config_path))
 
 
         else:
-            user_config = OmegaConf.merge(default_config)
+            user_config = OmegaConf.merge(self.default_config)
 
         try:
             self.config = OmegaConf.create(IterativeAppConfig(**OmegaConf.to_object(user_config)).dict())
