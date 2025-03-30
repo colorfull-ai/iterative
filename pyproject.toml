@@ -1,9 +1,15 @@
+[build-system]
+requires = [ "poetry-core>=1.0.0",]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "iterative"
-version = "0.2.2"
+version = "1.0.2"
 description = "The package to build iterative codebases with AI at the core."
-authors = ["Benjamin Garrard <ben@colorfull.ai>"]
-packages = [{ from = "src", include = "iterative" }]
+authors = [ "Benjamin Garrard <ben@colorfull.ai>",]
+[[tool.poetry.packages]]
+from = "src"
+include = "iterative"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -12,16 +18,10 @@ inflect = "^7.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+toml = "^0.10.2"
 
 [tool.poetry.scripts]
 iterative = "iterative:main"
 
 [tool.pytest.ini_options]
-filterwarnings = [
-    "ignore::DeprecationWarning:pkg_resources.*:",
-    "ignore::DeprecationWarning:google.rpc.*:"
-]
+filterwarnings = [ "ignore::DeprecationWarning:pkg_resources.*:", "ignore::DeprecationWarning:google.rpc.*:",]
