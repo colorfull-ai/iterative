@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "iterative"
-version = "1.0.3"
+version = "1.0.4"
 description = "The package to build iterative codebases with AI at the core."
 authors = [ "Benjamin Garrard <ben@colorfull.ai>",]
 [[tool.poetry.packages]]
