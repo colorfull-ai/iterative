@@ -12,14 +12,14 @@ from = "src"
 include = "iterative"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.8,<4.0"
 pydantic = ">=1.8.2,<3.0.0"
 PyYAML = "^6.0"
 omegaconf = "^2.3.0"
 typer = "^0.15.2"
 pyhumps = "^3.8.0"
-fastapi = "^0.115.12"
-uvicorn = "^0.34.0"
+fastapi = "^0.110.0"
+uvicorn = "^0.29.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
