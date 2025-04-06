@@ -41,19 +41,6 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
-      - name: Get previous version
-        id: get_version
-        run: |
-          echo "CURRENT_VERSION=$(poetry version -s)" >> $GITHUB_ENV
-
-      - name: Update version (patch)
-        run: poetry version patch
-
-      - name: Get new version
-        id: new_version
-        run: |
-          echo "NEW_VERSION=$(poetry version -s)" >> $GITHUB_ENV
-
       - name: Build and publish
         run: |
           poetry build
