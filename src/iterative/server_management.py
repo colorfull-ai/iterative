@@ -2,22 +2,12 @@
 import subprocess
 import time
 import os
-from iterative.config import get_config
 import subprocess
 import os
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 from logging import getLogger
 
 logger = getLogger(__name__)
 
-
-class ChangeHandler(FileSystemEventHandler):
-    def __init__(self, callback):
-        self.callback = callback
-
-    def on_any_event(self, event):
-        self.callback()
 
 def start_uvicorn(host, port, app_module):
     subprocess.run(["pkill", "-f", f"uvicorn.*{port}"])
@@ -36,10 +26,6 @@ def run_web_server():
     """
     from iterative import prep_app
 
-    host = get_config().get("fastapi_host", "0.0.0.0")
-    port = get_config().get("fastapi_port", 5279)
-    app_module = "iterative.web:iterative_user_web_app"
-
     prep_app()
 
     # Set up ngrok (assuming you have this function implemented)
@@ -47,41 +33,6 @@ def run_web_server():
     bash_script_path = os.path.join(script_directory, "run_ngrok.sh")
     run_ngrok_setup_script(bash_script_path)
 
-    uvicorn_process = start_uvicorn(host, port, app_module)
-
-    def restart_uvicorn():
-
-        nonlocal uvicorn_process
-        logger.info("Restarting Detected Changes restarting server... ")
-        uvicorn_process.kill()
-        uvicorn_process.wait()
-
-        prep_app()
-        uvicorn_process = start_uvicorn(host, port, app_module)
-
-    # Watchdog configuration
-    reload_dirs = get_config().get('reload_dirs', [])
-    logger.info(f"Watching directories for changes: {reload_dirs}")
-    # Add the parent directory of this file (iterative package root)
-
-    event_handler = ChangeHandler(restart_uvicorn)
-    observer = Observer()
-
-    if get_config().get("reload", False):
-        logger.info("Reload enabled.  Watching directories for changes...")
-        for directory in reload_dirs:
-            observer.schedule(event_handler, directory, recursive=True)
-
-    observer.start()
-
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-        uvicorn_process.kill()
-
-    observer.join()
 
 
 def run_ngrok_setup_script(script_path):
