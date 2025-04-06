@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "iterative"
-version = "1.1.0"
+version = "1.1.1"
 description = "The package to build iterative codebases with AI at the core."
 authors = [ "Benjamin Garrard <ben@colorfull.ai>",]
 [[tool.poetry.packages]]
@@ -12,14 +12,14 @@ from = "src"
 include = "iterative"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 pydantic = ">=1.8.2,<3.0.0"
 PyYAML = "^6.0"
-fastapi = "^0.110.0"
-uvicorn = "^0.29.0"
 omegaconf = "^2.3.0"
 typer = "^0.15.2"
 pyhumps = "^3.8.0"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
