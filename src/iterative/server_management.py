@@ -5,6 +5,7 @@ import os
 import subprocess
 import os
 from logging import getLogger
+from iterative.config import get_config
 
 logger = getLogger(__name__)
 
@@ -24,16 +25,22 @@ def run_web_server():
     """
     Run the fastapi web server over uvicorn.  Settings are taken from .iterative/config.yaml
     """
-    from iterative import prep_app
+    import uvicorn
+    from iterative import prep_app, web_app
 
+    host = get_config().get("fastapi_host", "0.0.0.0")
+    port = get_config().get("fastapi_port", 5279)
+
+    # Prepare the app with routers
     prep_app()
 
-    # Set up ngrok (assuming you have this function implemented)
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    bash_script_path = os.path.join(script_directory, "run_ngrok.sh")
-    run_ngrok_setup_script(bash_script_path)
-
-
+    try:
+        logger.info(f"Starting server on {host}:{port}")
+        uvicorn.run(web_app, host=host, port=port)
+    except KeyboardInterrupt:
+        logger.info("Server stopped by user")
+    except Exception as e:
+        logger.error(f"Error running server: {e}")
 
 def run_ngrok_setup_script(script_path):
     try:
