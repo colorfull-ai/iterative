@@ -58,25 +58,15 @@ def build_and_publish():
     run_command("poetry publish")
 
 def main():
-    # Parse command line arguments
-    version_bump = 'patch'  # default
-    if len(sys.argv) > 1:
-        version_bump = sys.argv[1]
-    
-    # Update version
-    new_version = update_version(version_bump)
-    
     # Build and publish
     build_and_publish()
     
     # Create and push git tag
     print("Creating and pushing git tag...")
-    run_command(f"git tag v{new_version}")
     run_command("git push --tags")
     
-    print(f"\nSuccessfully published version {new_version} to PyPI!")
+    print(f"\nSuccessfully published version to PyPI!")
     print("Package can now be installed with:")
-    print(f"pip install iterative=={new_version}")
 
 if __name__ == "__main__":
     main() 
