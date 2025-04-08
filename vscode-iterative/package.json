@@ -1,0 +1,127 @@
+{
+  "name": "vscode-iterative",
+  "displayName": "Iterative Project Manager",
+  "description": "Manage iterative projects with custom folder structures and icons. Organize your codebase with API, service, models, and actions folders.",
+  "version": "0.1.0",
+  "publisher": "colorfull",
+  "author": {
+    "name": "Benjamin Garrard",
+    "email": "ben@colorfull.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colorfull-ai/vscode-iterative"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "python",
+    "fastapi",
+    "api",
+    "iterative",
+    "project management"
+  ],
+  "icon": "resources/iterative-icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "license": "MIT",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "iterative.openManager",
+        "title": "Iterative: Open Project Manager",
+        "category": "Iterative"
+      },
+      {
+        "command": "iterative.createProject",
+        "title": "Iterative: Create New Project",
+        "category": "Iterative"
+      },
+      {
+        "command": "iterative.convertToIterative",
+        "title": "Iterative: Convert to Project",
+        "category": "Iterative"
+      },
+      {
+        "command": "iterative.createApiFile",
+        "title": "Iterative: Create CRUD API",
+        "category": "Iterative"
+      },
+      {
+        "command": "iterative.createModelFile",
+        "title": "Iterative: Create Model",
+        "category": "Iterative"
+      },
+      {
+        "command": "iterative.focusMode",
+        "title": "Iterative: Focus Mode",
+        "category": "Iterative"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "iterative-icons",
+        "label": "Iterative Icons",
+        "path": "./resources/iterative-icon-theme.json"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder && !explorerResourceIsRoot",
+          "command": "iterative.convertToIterative",
+          "group": "navigation@1"
+        },
+        {
+          "when": "explorerResourceIsFolder && resourceFilename == 'api'",
+          "command": "iterative.createApiFile",
+          "group": "navigation@2"
+        },
+        {
+          "when": "explorerResourceIsFolder && resourceFilename == 'models'",
+          "command": "iterative.createModelFile",
+          "group": "navigation@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "iterative.focusMode",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-electron": "^2.3.8"
+  }
+}

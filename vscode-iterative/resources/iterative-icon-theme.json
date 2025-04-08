@@ -1,0 +1,79 @@
+{
+  "iconDefinitions": {
+    "_iterative_folder": {
+      "iconPath": "./icons/iterative-folder.svg"
+    },
+    "_iterative_project": {
+      "iconPath": "./icons/iterative-project.svg"
+    },
+    "_api_folder": {
+      "iconPath": "./icons/api-folder.svg"
+    },
+    "_service_folder": {
+      "iconPath": "./icons/service-folder.svg"
+    },
+    "_models_folder": {
+      "iconPath": "./icons/models-folder.svg"
+    }
+  },
+  "folderNames": {
+    "test_project": "_iterative_project",
+    "test_project/.iterative": "_iterative_folder",
+    "test_project/api": "_api_folder",
+    "test_project/models": "_models_folder",
+    "test_project/service": "_service_folder",
+    "yolo": "_iterative_project",
+    "yolo/.iterative": "_iterative_folder",
+    "yolo/api": "_api_folder",
+    "yolo/models": "_models_folder"
+  },
+  "folderNamesExpanded": {
+    "test_project": "_iterative_project",
+    "test_project/.iterative": "_iterative_folder",
+    "test_project/api": "_api_folder",
+    "test_project/models": "_models_folder",
+    "test_project/service": "_service_folder",
+    "yolo": "_iterative_project",
+    "yolo/.iterative": "_iterative_folder",
+    "yolo/api": "_api_folder",
+    "yolo/models": "_models_folder"
+  },
+  "folder": "_folder",
+  "folderExpanded": "_folder_open",
+  "rootFolder": "_iterative_project",
+  "rootFolderExpanded": "_iterative_project",
+  "light": {
+    "folderNames": {
+      "test_project": "_iterative_project",
+      "test_project/.iterative": "_iterative_folder",
+      "test_project/api": "_api_folder",
+      "test_project/models": "_models_folder",
+      "test_project/service": "_service_folder",
+      "yolo": "_iterative_project",
+      "yolo/.iterative": "_iterative_folder",
+      "yolo/api": "_api_folder",
+      "yolo/models": "_models_folder"
+    },
+    "folderNamesExpanded": {
+      "test_project": "_iterative_project",
+      "test_project/.iterative": "_iterative_folder",
+      "test_project/api": "_api_folder",
+      "test_project/models": "_models_folder",
+      "test_project/service": "_service_folder",
+      "yolo": "_iterative_project",
+      "yolo/.iterative": "_iterative_folder",
+      "yolo/api": "_api_folder",
+      "yolo/models": "_models_folder"
+    },
+    "folder": "_folder",
+    "folderExpanded": "_folder_open",
+    "rootFolder": "_iterative_project",
+    "rootFolderExpanded": "_iterative_project"
+  },
+  "hidesExplorerArrows": false,
+  "file": "_file",
+  "fileExtensions": {},
+  "fileNames": {},
+  "languageIds": {},
+  "foldersExpanded": true
+}
